@@ -1,0 +1,1007 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Keson Weekly Command Center</title>
+  <style>
+    :root {
+      --bg: #f7f3ea;
+      --paper: #fffaf1;
+      --ink: #1b1a17;
+      --muted: #716b60;
+      --line: rgba(53, 44, 29, .13);
+      --accent: #111827;
+      --gold: #e2b857;
+      --sage: #9bb68b;
+      --avocado: #b7d66b;
+      --peacock: #4aa4a5;
+      --citron: #d3d956;
+      --yellow: #f3cf57;
+      --danger: #e36c5a;
+      --shadow: 0 20px 70px rgba(51, 40, 20, .13);
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --radius-md: 15px;
+      --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: var(--font);
+      background:
+        radial-gradient(circle at top left, rgba(211, 217, 86, .42), transparent 30rem),
+        radial-gradient(circle at top right, rgba(74, 164, 165, .22), transparent 28rem),
+        linear-gradient(135deg, #fbf7ee 0%, #f4ead9 100%);
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      width: min(1220px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 22px 0 38px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(290px, .85fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      background: rgba(255, 250, 241, .84);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .intro {
+      padding: 28px;
+      min-height: 258px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro:after {
+      content: "";
+      position: absolute;
+      width: 290px;
+      height: 290px;
+      right: -105px;
+      top: -95px;
+      border-radius: 999px;
+      background: conic-gradient(from 180deg, rgba(226,184,87,.4), rgba(183,214,107,.4), rgba(74,164,165,.28), rgba(226,184,87,.4));
+      filter: blur(.5px);
+      opacity: .85;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255,255,255,.45);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--avocado);
+      box-shadow: 0 0 0 5px rgba(183, 214, 107, .2);
+    }
+
+    h1 {
+      font-size: clamp(38px, 6vw, 76px);
+      line-height: .88;
+      letter-spacing: -.06em;
+      margin: 22px 0 14px;
+      max-width: 760px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: clamp(15px, 2vw, 18px);
+      line-height: 1.55;
+      max-width: 650px;
+      margin: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .quick-actions {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .today-card {
+      background: #14140f;
+      color: #fff8e6;
+      border-radius: 26px;
+      padding: 20px;
+      min-height: 176px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .today-card:before {
+      content: "";
+      position: absolute;
+      inset: auto -60px -80px auto;
+      width: 180px;
+      height: 180px;
+      background: var(--gold);
+      border-radius: 999px;
+      opacity: .24;
+    }
+
+    .today-card small { color: rgba(255,248,230,.68); font-weight: 750; text-transform: uppercase; letter-spacing: .08em; }
+    .today-card h2 { margin: 10px 0 0; font-size: 34px; letter-spacing: -.04em; }
+    .today-card p { margin: 8px 0 0; color: rgba(255,248,230,.78); line-height: 1.45; }
+
+    .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn {
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(255,255,255,.58);
+      color: var(--ink);
+      padding: 0 14px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform .16s ease, background .16s ease, border-color .16s ease;
+      text-decoration: none;
+    }
+    .btn:hover { transform: translateY(-1px); background: rgba(255,255,255,.86); }
+    .btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .btn.ghost { background: transparent; }
+    .btn.danger { color: #8f2117; background: rgba(227, 108, 90, .12); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 310px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .sidebar {
+      padding: 16px;
+      position: sticky;
+      top: 16px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 12px;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: .08em;
+    }
+
+    .day-tabs { display: grid; gap: 8px; }
+    .day-tab {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 50px;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+      border-radius: 16px;
+      background: transparent;
+      color: var(--muted);
+      text-align: left;
+      transition: .16s ease;
+    }
+    .day-tab strong { color: var(--ink); }
+    .day-tab.active {
+      background: #fff;
+      border-color: var(--line);
+      box-shadow: 0 10px 26px rgba(44, 35, 22, .08);
+      color: var(--ink);
+    }
+    .count {
+      min-width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: rgba(27,26,23,.08);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .main { display: grid; gap: 18px; }
+    .day-board { padding: 20px; }
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+    .day-header h2 { margin: 0; font-size: clamp(30px, 4vw, 48px); line-height: .95; letter-spacing: -.05em; }
+    .day-header p { margin: 8px 0 0; color: var(--muted); }
+
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .lane {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255,255,255,.42);
+      padding: 12px;
+      min-height: 250px;
+    }
+    .lane h3 {
+      margin: 2px 2px 12px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .lane[data-lane="salesSystem"] { background: linear-gradient(180deg, rgba(102, 165, 255, .26), rgba(255,255,255,.5)); border-color: rgba(65, 125, 210, .22); }
+    .lane[data-lane="healthSystem"] { background: linear-gradient(180deg, rgba(87, 190, 132, .25), rgba(255,255,255,.5)); border-color: rgba(61, 145, 94, .22); }
+    .lane[data-lane="personalGrowthSystem"] { background: linear-gradient(180deg, rgba(164, 124, 255, .24), rgba(255,255,255,.5)); border-color: rgba(126, 84, 220, .22); }
+    .task-list { display: grid; gap: 10px; }
+    .system-note-stack { display: grid; gap: 10px; margin-top: 12px; }
+    .system-field { display: grid; gap: 7px; }
+    .system-field label {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .system-field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,253,248,.86);
+      padding: 11px 12px;
+      resize: vertical;
+      outline: 0;
+      line-height: 1.45;
+      color: var(--ink);
+      min-height: 92px;
+    }
+    .system-field textarea:focus { border-color: rgba(27,26,23,.38); }
+    .meals-log { min-height: 180px; }
+    .theme-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding: 14px 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(226,184,87,.35);
+      background: linear-gradient(135deg, rgba(243,207,87,.42), rgba(255,253,248,.72));
+    }
+    .theme-card span {
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #725915;
+    }
+    .theme-card input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+      font-weight: 900;
+      font-size: clamp(17px, 2vw, 23px);
+      text-align: right;
+      min-height: 36px;
+    }
+    .task {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border-radius: 17px;
+      background: #fffdf8;
+      border: 1px solid rgba(53,44,29,.09);
+      box-shadow: 0 8px 20px rgba(44, 35, 22, .045);
+    }
+    .task.done { opacity: .62; }
+    .task.done .task-text { text-decoration: line-through; color: var(--muted); }
+    .task input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--ink); margin: 1px 0 0; }
+    .task-text {
+      border: 0;
+      outline: 0;
+      background: transparent;
+      resize: none;
+      min-height: 24px;
+      width: 100%;
+      color: var(--ink);
+      line-height: 1.35;
+      padding: 0;
+    }
+    .task-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 25px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(27, 26, 23, .06);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid rgba(27, 26, 23, .05);
+    }
+    .chip.b { background: rgba(155,182,139,.28); color: #41573a; }
+    .chip.c { background: rgba(243,207,87,.34); color: #725915; }
+    .chip.d { background: rgba(183,214,107,.36); color: #425a18; }
+    .chip.a, .chip.e { background: rgba(113,107,96,.14); }
+    .delete {
+      border: 0;
+      background: transparent;
+      color: rgba(113,107,96,.55);
+      font-weight: 900;
+      font-size: 18px;
+      padding: 0 2px;
+    }
+    .delete:hover { color: var(--danger); }
+
+    .add-form {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .add-form textarea, .add-form select, .add-form input {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      border-radius: 14px;
+      padding: 11px 12px;
+      outline: none;
+      min-height: 44px;
+    }
+    .add-form textarea:focus, .add-form select:focus, .add-form input:focus { border-color: rgba(27,26,23,.38); }
+
+    .team-grid, .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .team-card, .metric-card, .note-card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255,255,255,.5);
+      padding: 16px;
+    }
+    .team-card h3, .metric-card h3, .note-card h3 { margin: 0 0 10px; letter-spacing: -.02em; }
+    .team-card p, .metric-card p, .note-card p { margin: 0; color: var(--muted); line-height: 1.45; }
+    .team-card h3 { display: flex; align-items: center; }
+    .team-section { margin-top: 12px; display: grid; gap: 7px; }
+    .team-section label {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .team-section textarea {
+      width: 100%;
+      min-height: 74px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fffdf8;
+      padding: 11px 12px;
+      resize: vertical;
+      outline: 0;
+      line-height: 1.4;
+      color: var(--ink);
+    }
+    .team-section textarea.current-status {
+      min-height: 92px;
+      max-height: 112px;
+    }
+    .status-hint {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: -2px;
+    }
+    .team-section textarea:focus { border-color: rgba(27,26,23,.38); }
+    .person-dot { width: 11px; height: 11px; border-radius: 999px; display: inline-block; margin-right: 8px; flex: 0 0 auto; }
+    .carynn { background: var(--yellow); }
+    .leslie { background: var(--peacock); }
+    .xinru { background: var(--avocado); }
+    .tc { background: var(--citron); }
+
+    .bottom { padding: 20px; display: grid; gap: 18px; }
+    .note-card textarea {
+      width: 100%;
+      min-height: 130px;
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fffdf8;
+      padding: 13px;
+      resize: vertical;
+      outline: 0;
+      line-height: 1.45;
+    }
+
+    dialog {
+      width: min(620px, calc(100% - 28px));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 0;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    dialog::backdrop { background: rgba(20,20,15,.45); backdrop-filter: blur(4px); }
+    .dialog-body { padding: 22px; }
+    .dialog-body h2 { margin: 0 0 8px; letter-spacing: -.04em; font-size: 32px; }
+    .dialog-body p { margin: 0 0 16px; color: var(--muted); }
+    .dialog-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+    .json-box {
+      width: 100%;
+      min-height: 230px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      padding: 12px;
+      background: #fffdf8;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      background: #14140f;
+      color: #fff8e6;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 800;
+      box-shadow: 0 14px 40px rgba(0,0,0,.2);
+      transition: .22s ease;
+      z-index: 9;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 920px) {
+      .hero, .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .day-tabs { grid-template-columns: repeat(7, minmax(88px, 1fr)); overflow-x: auto; padding-bottom: 3px; }
+      .day-tab { min-width: 88px; flex-direction: column; align-items: flex-start; }
+      .columns { grid-template-columns: 1fr; }
+      .team-grid, .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .app { width: min(100% - 18px, 1220px); padding-top: 9px; }
+      .intro { padding: 20px; min-height: 230px; }
+      .quick-actions, .sidebar, .day-board, .bottom { padding: 12px; }
+      .action-row { grid-template-columns: 1fr; }
+      .team-grid, .metrics-grid { grid-template-columns: 1fr; }
+      .day-header { flex-direction: column; }
+      h1 { font-size: 46px; }
+      .today-card h2 { font-size: 29px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <section class="panel intro">
+        <div class="eyebrow"><span class="pulse"></span><span id="weekLabel">Weekly Planning</span></div>
+        <h1>Weekly Command Center</h1>
+        <p class="subtitle">A cleaner cockpit for your week: daily tasks, team check-ins, booth shifts, ABCDE time blocks, and weekly review — built to feel good on both phone and laptop.</p>
+      </section>
+      <aside class="panel quick-actions">
+        <div class="today-card">
+          <div>
+            <small>Today</small>
+            <h2 id="todayTitle">Sunday</h2>
+            <p id="todaySummary">Keep it simple. Clear today's task list first.</p>
+          </div>
+        </div>
+        <div class="action-row">
+          <button class="btn primary" id="quickAddBtn">＋ Quick add</button>
+          <button class="btn" id="exportBtn">Export</button>
+          <button class="btn" id="importBtn">Import</button>
+          <button class="btn ghost" id="resetBtn">Reset demo</button>
+        </div>
+      </aside>
+    </header>
+
+    <div class="layout">
+      <aside class="panel sidebar">
+        <div class="section-title">Days <span>SGT</span></div>
+        <nav class="day-tabs" id="dayTabs"></nav>
+      </aside>
+
+      <main class="main">
+        <section class="panel day-board">
+          <div class="day-header">
+            <div>
+              <h2 id="activeDayTitle">Monday</h2>
+              <p id="activeDaySub">Pick a day to plan. Edits save locally in this browser.</p>
+            </div>
+            <button class="btn primary" id="addTaskTop">Add task</button>
+          </div>
+          <div class="theme-card">
+            <span>Day theme</span>
+            <input id="dayThemeInput" aria-label="Day theme" />
+          </div>
+          <div class="columns">
+            <section class="lane" data-lane="calendar">
+              <h3>Calendar <span class="count" id="calendarCount">0</span></h3>
+              <div class="task-list" id="calendarList"></div>
+              <form class="add-form" data-add="calendar">
+                <textarea rows="2" placeholder=""></textarea>
+                <select>
+                  <option value="C">C wealth building</option><option value="B">B active income</option><option value="A">A misc</option><option value="D">D self growth</option><option value="E">E time waster</option>
+                </select>
+                <button class="btn" type="submit">Add calendar</button>
+              </form>
+            </section>
+            <section class="lane" data-lane="fixed">
+              <h3>Fixed schedule <span class="count" id="fixedCount">0</span></h3>
+              <div class="task-list" id="fixedList"></div>
+              <form class="add-form" data-add="fixed">
+                <textarea rows="2" placeholder=""></textarea>
+                <select>
+                  <option value="A">A misc</option><option value="B">B active income</option><option value="C">C wealth building</option><option value="D">D self growth</option><option value="E">E time waster</option>
+                </select>
+                <button class="btn" type="submit">Add fixed</button>
+              </form>
+            </section>
+            <section class="lane" data-lane="must">
+              <h3>Must-do <span class="count" id="mustCount">0</span></h3>
+              <div class="task-list" id="mustList"></div>
+              <form class="add-form" data-add="must">
+                <textarea rows="2" placeholder=""></textarea>
+                <select>
+                  <option value="C">C wealth building</option><option value="B">B active income</option><option value="D">D self growth</option><option value="A">A misc</option><option value="E">E time waster</option>
+                </select>
+                <button class="btn" type="submit">Add must-do</button>
+              </form>
+            </section>
+            <section class="lane" data-lane="ifTime">
+              <h3>If got time <span class="count" id="ifTimeCount">0</span></h3>
+              <div class="task-list" id="ifTimeList"></div>
+              <form class="add-form" data-add="ifTime">
+                <textarea rows="2" placeholder=""></textarea>
+                <select>
+                  <option value="D">D self growth</option><option value="C">C wealth building</option><option value="A">A misc</option><option value="B">B active income</option><option value="E">E time waster</option>
+                </select>
+                <button class="btn" type="submit">Add if got time</button>
+              </form>
+            </section>
+            <section class="lane" data-lane="salesSystem">
+              <h3>Sales System <span class="count" id="salesSystemCount">0</span></h3>
+              <div class="task-list" id="salesSystemList"></div>
+              <form class="add-form" data-add="salesSystem">
+                <textarea rows="2" placeholder=""></textarea>
+                <select>
+                  <option value="B">B active income</option><option value="C">C wealth building</option><option value="D">D self growth</option><option value="A">A misc</option><option value="E">E time waster</option>
+                </select>
+                <button class="btn" type="submit">Add sales system</button>
+              </form>
+            </section>
+            <section class="lane" data-lane="healthSystem">
+              <h3>Health System <span class="count" id="healthSystemCount">0</span></h3>
+              <div class="task-list" id="healthSystemList"></div>
+              <div class="system-note-stack">
+                <div class="system-field">
+                  <label>Workout log</label>
+                  <textarea id="workoutLog" data-system-note="workoutLog" placeholder="Log today's workout!"></textarea>
+                </div>
+                <div class="system-field">
+                  <label>Meals I had today</label>
+                  <textarea id="mealsLog" class="meals-log" data-system-note="mealsLog"></textarea>
+                </div>
+              </div>
+              <form class="add-form" data-add="healthSystem">
+                <textarea rows="2" placeholder=""></textarea>
+                <select>
+                  <option value="D">D self growth</option><option value="A">A misc</option><option value="C">C wealth building</option><option value="B">B active income</option><option value="E">E time waster</option>
+                </select>
+                <button class="btn" type="submit">Add health system</button>
+              </form>
+            </section>
+            <section class="lane" data-lane="personalGrowthSystem">
+              <h3>Personal Growth System <span class="count" id="personalGrowthSystemCount">0</span></h3>
+              <div class="task-list" id="personalGrowthSystemList"></div>
+              <div class="system-note-stack">
+                <div class="system-field">
+                  <label>What I learnt today so far</label>
+                  <textarea id="learningToday" data-system-note="learningToday"></textarea>
+                </div>
+              </div>
+              <form class="add-form" data-add="personalGrowthSystem">
+                <textarea rows="2" placeholder=""></textarea>
+                <select>
+                  <option value="D">D self growth</option><option value="C">C wealth building</option><option value="A">A misc</option><option value="B">B active income</option><option value="E">E time waster</option>
+                </select>
+                <button class="btn" type="submit">Add growth system</button>
+              </form>
+            </section>
+          </div>
+        </section>
+
+        <section class="panel bottom">
+          <div class="section-title">Team focus <span>Booth + coaching</span></div>
+          <div class="team-grid" id="teamGrid"></div>
+        </section>
+
+        <section class="panel bottom">
+          <div class="section-title">ABCDE snapshot <span>Primary intent</span></div>
+          <div class="metrics-grid" id="metricsGrid"></div>
+        </section>
+
+        <section class="panel bottom">
+          <div class="section-title">Weekly review <span>Keep it real</span></div>
+          <div class="note-card">
+            <h3>What have I learnt this week?</h3>
+            <p>Simple reflections. This is the part that can sync back into Notion later.</p>
+            <textarea id="weeklyLearning"></textarea>
+          </div>
+          <div class="note-card">
+            <h3>Team concerns / FAQ</h3>
+            <p>Use this to collect the concerns/challenges from your team before reviews.</p>
+            <textarea id="teamFaq"></textarea>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog id="dataDialog">
+    <div class="dialog-body">
+      <h2 id="dialogTitle">Export plan</h2>
+      <p id="dialogHint">Copy this JSON to move your plan between devices for now.</p>
+      <textarea class="json-box" id="jsonBox"></textarea>
+      <div class="dialog-actions">
+        <button class="btn ghost" id="closeDialog">Close</button>
+        <button class="btn primary" id="applyImport" hidden>Import data</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast">Saved</div>
+
+  <script>
+    const STORAGE_KEY = 'keson-weekly-command-center-v2';
+    const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    const lanes = ['calendar','fixed','must','ifTime','salesSystem','healthSystem','personalGrowthSystem'];
+    const abc = {
+      A: {label: 'A Misc', color: 'Grey', detail: 'travel, sleep, eating, errands'},
+      B: {label: 'B Active Income', color: 'Sage', detail: 'booth / shifts / direct sales'},
+      C: {label: 'C Wealth Building', color: 'Banana', detail: 'learners, systems, team, content'},
+      D: {label: 'D Self Growth', color: 'Pistachio', detail: 'gym, reading, courses, health'},
+      E: {label: 'E Time Waster', color: 'Grey', detail: 'scrolling / low-value distraction'}
+    };
+
+    const defaultSystemNotes = () => ({
+      workoutLog: '',
+      mealsLog: 'bfast - \n\nlunch - \n\ndinner - \n\nsupper - ',
+      learningToday: ''
+    });
+
+    const seed = {
+      week: '10–16 Aug',
+      activeDay: 'Monday',
+      notes: {
+        weeklyLearning: 'Focus on the why behind the target, not just the target.\nThe workday starts the night before — plan tomorrow before tomorrow starts.',
+        teamFaq: 'Prepare concerns and challenges faced while handling team members.\nCreate FAQ and discuss together next meet.'
+      },
+      team: [
+        {name:'Carynn', cls:'carynn', currentStatus:'Weekly planning, keep momentum clean, check in after shift.', whatHappenedToday:''},
+        {name:'Leslie', cls:'leslie', currentStatus:'Identity + state. Check takeaways, get him to text you.', whatHappenedToday:''},
+        {name:'Xinru', cls:'xinru', currentStatus:'Bridge to someone, support booth, watch school-hour constraints.', whatHappenedToday:''},
+        {name:'TC', cls:'tc', currentStatus:'Team lead recording / Fireflies setup. Get takeaways.', whatHappenedToday:''}
+      ],
+      days: {
+        Monday: {
+          theme: 'Manager Monday (Meetings & Build Momentum)',
+          calendar: [task('Manager Monday (Meetings & Build Momentum)', 'C'), task('National Day observance', 'A'), task('Carynn Booth Shift (Morning)', 'B'), task('Leslie Booth Shift (Morning)', 'B'), task('Xinru Booth Shift (Morning)', 'B'), task('Meetings + Momentum Monday', 'C'), task('Xinru Booth Shift (Afternoon)', 'B'), task('Entrepreneur Meeting', 'C'), task('Leslie Weekly Review', 'C')],
+          fixed: [task('Entrepreneur Meeting', 'C'), task('Momentum Monday', 'C')],
+          must: [task('prepare for mm — notion hacks', 'C'), task('weekly planning for carynn', 'C'), task('bridge xinru to someone', 'C'), task('check in on leslie and tongcheng on their takeaways, get them to text me', 'C')],
+          ifTime: [task('edit booth ic ipa', 'C')],
+          salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')],
+          healthSystem: [task('Workout Today', 'D')],
+          personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')],
+          systemNotes: defaultSystemNotes()
+        },
+        Tuesday: { theme: '', calendar: [], fixed: [], must: [task('review team progress', 'C')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
+        Wednesday: { theme: '', calendar: [task('GSPA (Diamonds)', 'C'), task('Xinru Booth Shift (Afternoon) — need leave early for class', 'B')], fixed: [task('GSPA (Diamonds)', 'C')], must: [task('watch Xinru — may need leave early for class', 'C')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
+        Thursday: { theme: '', calendar: [task('10:30am — KAH meeting', 'C')], fixed: [task('10:30am — KAH meeting', 'C')], must: [task('support team booths if free', 'C')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
+        Friday: { theme: '', calendar: [], fixed: [], must: [task('follow ups + team check-ins', 'B')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
+        Saturday: { theme: '', calendar: [task('7pm — Enspire Orientation', 'C')], fixed: [task('7pm — Enspire Orientation', 'C')], must: [task('church stuff may affect booth timing', 'A')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
+        Sunday: { theme: '', calendar: [task('10pm — Weekly Review for Carynn', 'C')], fixed: [task('10pm — Weekly Review for Carynn', 'C')], must: [task('plan next week', 'C'), task('charge whoop tonight 11pm', 'D')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() }
+      }
+    };
+
+    function task(text, code='C') {
+      return { id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()), text, code, done: false };
+    }
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? migrateState(JSON.parse(raw)) : structuredClone(seed);
+      } catch { return structuredClone(seed); }
+    }
+
+    function migrateState(next) {
+      next.week ||= seed.week;
+      next.activeDay ||= 'Monday';
+      next.notes ||= structuredClone(seed.notes);
+      next.team ||= structuredClone(seed.team);
+      next.team.forEach((member, index) => {
+        const fallback = seed.team[index] || {};
+        if (!('currentStatus' in member)) member.currentStatus = member.focus || fallback.currentStatus || '';
+        if (!('whatHappenedToday' in member)) member.whatHappenedToday = '';
+      });
+      next.days ||= {};
+      days.forEach(day => {
+        next.days[day] ||= structuredClone(seed.days[day]);
+        if (!('theme' in next.days[day])) next.days[day].theme = seed.days[day].theme || '';
+        next.days[day].systemNotes ||= defaultSystemNotes();
+        next.days[day].systemNotes.mealsLog ||= 'bfast - \n\nlunch - \n\ndinner - \n\nsupper - ';
+        lanes.forEach(lane => {
+          if (!Array.isArray(next.days[day][lane])) next.days[day][lane] = structuredClone(seed.days[day][lane] || []);
+        });
+      });
+      return next;
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      showToast('Saved');
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => toast.classList.remove('show'), 1200);
+    }
+
+    function totalDayTasks(day) {
+      const d = state.days[day];
+      return lanes.reduce((n, lane) => n + ((d[lane] || []).filter(t => !t.done).length), 0);
+    }
+
+    function renderTabs() {
+      const wrap = document.getElementById('dayTabs');
+      wrap.innerHTML = days.map(day => `
+        <button class="day-tab ${state.activeDay === day ? 'active' : ''}" data-day="${day}">
+          <strong>${day.slice(0,3)}</strong><span class="count">${totalDayTasks(day)}</span>
+        </button>
+      `).join('');
+      wrap.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
+        state.activeDay = btn.dataset.day;
+        saveState();
+        render();
+      }));
+    }
+
+    function renderTasks() {
+      const day = state.days[state.activeDay];
+      if (!('theme' in day)) day.theme = '';
+      const themeInput = document.getElementById('dayThemeInput');
+      themeInput.value = day.theme || '';
+      themeInput.oninput = e => { day.theme = e.target.value; localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); };
+      day.systemNotes ||= defaultSystemNotes();
+      document.querySelectorAll('[data-system-note]').forEach(el => {
+        el.value = day.systemNotes[el.dataset.systemNote] || '';
+        el.oninput = e => {
+          day.systemNotes[e.target.dataset.systemNote] = e.target.value;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        };
+        el.onblur = () => showToast('Saved');
+      });
+      document.getElementById('activeDayTitle').textContent = state.activeDay;
+      document.getElementById('activeDaySub').textContent = `${state.week} · ${totalDayTasks(state.activeDay)} open item${totalDayTasks(state.activeDay) === 1 ? '' : 's'}`;
+      lanes.forEach(lane => {
+        const list = document.getElementById(`${lane}List`);
+        const items = day[lane];
+        document.getElementById(`${lane}Count`).textContent = items.filter(t => !t.done).length;
+        list.innerHTML = items.map(t => `
+          <article class="task ${t.done ? 'done' : ''}" data-id="${t.id}" data-lane="${lane}">
+            <input type="checkbox" ${t.done ? 'checked' : ''} aria-label="Mark done" />
+            <div>
+              <textarea class="task-text" rows="2">${escapeHtml(t.text)}</textarea>
+              <div class="task-meta"><span class="chip ${t.code.toLowerCase()}">${abc[t.code]?.label || t.code}</span></div>
+            </div>
+            <button class="delete" title="Delete">×</button>
+          </article>
+        `).join('') || `<p style="color:var(--muted); margin:10px 6px; line-height:1.45;">Empty for now.</p>`;
+      });
+
+      document.querySelectorAll('.task input[type="checkbox"]').forEach(box => box.addEventListener('change', e => {
+        const card = e.target.closest('.task');
+        const item = findTask(card.dataset.lane, card.dataset.id);
+        item.done = e.target.checked;
+        saveState(); render();
+      }));
+      document.querySelectorAll('.task-text').forEach(area => {
+        area.addEventListener('input', e => {
+          const card = e.target.closest('.task');
+          const item = findTask(card.dataset.lane, card.dataset.id);
+          item.text = e.target.value;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        });
+        area.addEventListener('blur', () => showToast('Saved'));
+      });
+      document.querySelectorAll('.delete').forEach(btn => btn.addEventListener('click', e => {
+        const card = e.target.closest('.task');
+        const arr = state.days[state.activeDay][card.dataset.lane];
+        const idx = arr.findIndex(t => t.id === card.dataset.id);
+        if (idx >= 0) arr.splice(idx,1);
+        saveState(); render();
+      }));
+    }
+
+    function findTask(lane, id) {
+      return state.days[state.activeDay][lane].find(t => t.id === id);
+    }
+
+    function renderTeam() {
+      document.getElementById('teamGrid').innerHTML = state.team.map(p => `
+        <article class="team-card">
+          <h3><span class="person-dot ${p.cls}"></span>${p.name}</h3>
+          <div class="team-section">
+            <label>Current status:</label>
+            <textarea class="current-status" rows="3" data-team="${p.name}" data-field="currentStatus">${escapeHtml(p.currentStatus || '')}</textarea>
+            <div class="status-hint">Max 3 lines — keep only the most important status.</div>
+          </div>
+          <div class="team-section">
+            <label>What happened today:</label>
+            <textarea data-team="${p.name}" data-field="whatHappenedToday">${escapeHtml(p.whatHappenedToday || '')}</textarea>
+          </div>
+        </article>
+      `).join('');
+      document.querySelectorAll('[data-team][data-field]').forEach(el => {
+        el.addEventListener('input', e => {
+          const member = state.team.find(p => p.name === e.target.dataset.team);
+          if (e.target.dataset.field === 'currentStatus') e.target.value = limitLines(e.target.value, 3);
+          member[e.target.dataset.field] = e.target.value;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        });
+        el.addEventListener('blur', () => showToast('Saved'));
+      });
+    }
+
+    function renderMetrics() {
+      const totals = {A:0,B:0,C:0,D:0,E:0};
+      days.forEach(day => lanes.forEach(lane => (state.days[day][lane] || []).forEach(t => { if (!t.done) totals[t.code] = (totals[t.code] || 0) + 1; }))); 
+      document.getElementById('metricsGrid').innerHTML = Object.keys(abc).map(code => `
+        <article class="metric-card">
+          <h3><span class="chip ${code.toLowerCase()}">${abc[code].label}</span></h3>
+          <p><strong style="font-size:30px;color:var(--ink);letter-spacing:-.04em;">${totals[code]}</strong> open items</p>
+          <p>${abc[code].detail}</p>
+        </article>
+      `).join('');
+    }
+
+    function renderNotes() {
+      document.getElementById('weeklyLearning').value = state.notes.weeklyLearning || '';
+      document.getElementById('teamFaq').value = state.notes.teamFaq || '';
+      document.getElementById('weekLabel').textContent = `Weekly Planning · ${state.week}`;
+      const today = new Date().toLocaleDateString('en-SG', {weekday:'long', timeZone:'Asia/Singapore'});
+      document.getElementById('todayTitle').textContent = today;
+      const n = state.days[today] ? totalDayTasks(today) : totalDayTasks(state.activeDay);
+      document.getElementById('todaySummary').textContent = `${n} open item${n === 1 ? '' : 's'} · keep it simple`;
+    }
+
+    function render() { renderTabs(); renderTasks(); renderTeam(); renderMetrics(); renderNotes(); }
+
+    function escapeHtml(str='') {
+      return str.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
+
+    function limitLines(value, maxLines) {
+      return value.split('\n').slice(0, maxLines).join('\n');
+    }
+
+    document.querySelectorAll('.add-form').forEach(form => form.addEventListener('submit', e => {
+      e.preventDefault();
+      const lane = form.dataset.add;
+      const text = form.querySelector('textarea').value.trim();
+      const code = form.querySelector('select').value;
+      if (!text) return;
+      state.days[state.activeDay][lane].push(task(text, code));
+      form.reset();
+      saveState(); render();
+    }));
+
+    document.getElementById('weeklyLearning').addEventListener('input', e => { state.notes.weeklyLearning = e.target.value; localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); });
+    document.getElementById('teamFaq').addEventListener('input', e => { state.notes.teamFaq = e.target.value; localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); });
+
+    const dialog = document.getElementById('dataDialog');
+    const jsonBox = document.getElementById('jsonBox');
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      document.getElementById('dialogTitle').textContent = 'Export plan';
+      document.getElementById('dialogHint').textContent = 'Copy this JSON to move your plan between phone/laptop until Notion sync is connected.';
+      document.getElementById('applyImport').hidden = true;
+      jsonBox.value = JSON.stringify(state, null, 2);
+      dialog.showModal();
+      jsonBox.select();
+    });
+    document.getElementById('importBtn').addEventListener('click', () => {
+      document.getElementById('dialogTitle').textContent = 'Import plan';
+      document.getElementById('dialogHint').textContent = 'Paste exported JSON here.';
+      document.getElementById('applyImport').hidden = false;
+      jsonBox.value = '';
+      dialog.showModal();
+    });
+    document.getElementById('applyImport').addEventListener('click', () => {
+      try {
+        const next = JSON.parse(jsonBox.value);
+        if (!next.days || !next.team) throw new Error('Missing planner fields');
+        state = next;
+        saveState(); render(); dialog.close();
+      } catch (err) { alert('Cannot import: ' + err.message); }
+    });
+    document.getElementById('closeDialog').addEventListener('click', () => dialog.close());
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (!confirm('Reset this local demo data?')) return;
+      state = structuredClone(seed);
+      saveState(); render();
+    });
+    document.getElementById('quickAddBtn').addEventListener('click', () => document.querySelector('[data-add="must"] textarea').focus());
+    document.getElementById('addTaskTop').addEventListener('click', () => document.querySelector('[data-add="must"] textarea').focus());
+
+    render();
+  </script>
+</body>
+</html>
