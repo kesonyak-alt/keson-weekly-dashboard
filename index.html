@@ -630,10 +630,6 @@
                   <label>Workout log</label>
                   <textarea id="workoutLog" data-system-note="workoutLog" placeholder="Log today's workout!"></textarea>
                 </div>
-                <div class="system-field">
-                  <label>Meals I had today</label>
-                  <textarea id="mealsLog" class="meals-log" data-system-note="mealsLog"></textarea>
-                </div>
               </div>
               <form class="add-form" data-add="healthSystem">
                 <textarea rows="2" placeholder=""></textarea>
@@ -718,7 +714,6 @@
 
     const defaultSystemNotes = () => ({
       workoutLog: '',
-      mealsLog: 'bfast - \n\nlunch - \n\ndinner - \n\nsupper - ',
       learningToday: ''
     });
 
@@ -747,7 +742,6 @@
           personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')],
           systemNotes: {
             workoutLog: '7:30am–9am — ran',
-            mealsLog: 'bfast - cooked 9am–9:30am, eating from 9:40am onwards\n\nlunch - \n\ndinner - \n\nsupper - ',
             learningToday: ''
           }
         },
@@ -788,7 +782,6 @@
         next.days[day] ||= structuredClone(seed.days[day]);
         if (!('theme' in next.days[day])) next.days[day].theme = seed.days[day].theme || '';
         next.days[day].systemNotes ||= defaultSystemNotes();
-        next.days[day].systemNotes.mealsLog ||= 'bfast - \n\nlunch - \n\ndinner - \n\nsupper - ';
         lanes.forEach(lane => {
           if (!Array.isArray(next.days[day][lane])) next.days[day][lane] = structuredClone(seed.days[day][lane] || []);
         });
