@@ -280,6 +280,7 @@
       align-items: center;
       justify-content: space-between;
     }
+    .lane[data-lane="must"] { background: linear-gradient(180deg, rgba(255, 111, 111, .24), rgba(255,255,255,.5)); border-color: rgba(215, 72, 72, .22); }
     .lane[data-lane="salesSystem"] { background: linear-gradient(180deg, rgba(102, 165, 255, .26), rgba(255,255,255,.5)); border-color: rgba(65, 125, 210, .22); }
     .lane[data-lane="healthSystem"] { background: linear-gradient(180deg, rgba(87, 190, 132, .25), rgba(255,255,255,.5)); border-color: rgba(61, 145, 94, .22); }
     .lane[data-lane="personalGrowthSystem"] { background: linear-gradient(180deg, rgba(164, 124, 255, .24), rgba(255,255,255,.5)); border-color: rgba(126, 84, 220, .22); }
@@ -588,17 +589,6 @@
                 <button class="btn" type="submit">Add</button>
               </form>
             </section>
-            <section class="lane" data-lane="fixed">
-              <h3>Fixed schedule <span class="count" id="fixedCount">0</span></h3>
-              <div class="task-list" id="fixedList"></div>
-              <form class="add-form" data-add="fixed">
-                <textarea rows="2" placeholder=""></textarea>
-                <select>
-                  <option value="A">A misc</option><option value="B">B active income</option><option value="C">C wealth building</option><option value="D">D self growth</option><option value="E">E time waster</option>
-                </select>
-                <button class="btn" type="submit">Add</button>
-              </form>
-            </section>
             <section class="lane" data-lane="must">
               <h3>Must-do <span class="count" id="mustCount">0</span></h3>
               <div class="task-list" id="mustList"></div>
@@ -717,7 +707,7 @@
   <script>
     const STORAGE_KEY = 'keson-weekly-command-center-v2';
     const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-    const lanes = ['calendar','fixed','must','ifTime','salesSystem','healthSystem','personalGrowthSystem'];
+    const lanes = ['calendar','must','ifTime','salesSystem','healthSystem','personalGrowthSystem'];
     const abc = {
       A: {label: 'A Misc', color: 'Grey', detail: 'travel, sleep, eating, errands'},
       B: {label: 'B Active Income', color: 'Sage', detail: 'booth / shifts / direct sales'},
