@@ -572,7 +572,6 @@
               <h2 id="activeDayTitle">Monday</h2>
               <p id="activeDaySub">Pick a day to plan. Edits save locally in this browser.</p>
             </div>
-            <button class="btn primary" id="addTaskTop">Add task</button>
           </div>
           <div class="theme-card">
             <span>Day theme</span>
@@ -987,7 +986,6 @@
       saveState(); render();
     });
     document.getElementById('quickAddBtn').addEventListener('click', () => document.querySelector('[data-add="must"] textarea').focus());
-    document.getElementById('addTaskTop').addEventListener('click', () => document.querySelector('[data-add="must"] textarea').focus());
 
     render();
   </script>
