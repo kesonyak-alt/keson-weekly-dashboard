@@ -458,6 +458,31 @@
     .tc { background: var(--citron); }
 
     .bottom { padding: 20px; display: grid; gap: 18px; }
+    .dropdown-panel { padding: 14px; }
+    .dropdown-panel summary {
+      list-style: none;
+      cursor: pointer;
+      user-select: none;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,253,248,.78);
+      padding: 14px 16px;
+      font-weight: 900;
+      letter-spacing: -.01em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 48px;
+    }
+    .dropdown-panel summary::-webkit-details-marker { display: none; }
+    .dropdown-panel summary::after {
+      content: '⌄';
+      font-size: 18px;
+      color: var(--muted);
+      transition: transform .18s ease;
+    }
+    .dropdown-panel[open] summary::after { transform: rotate(180deg); }
+    .dropdown-content { padding-top: 16px; display: grid; gap: 18px; }
     .note-card textarea {
       width: 100%;
       min-height: 130px;
@@ -664,24 +689,28 @@
           <div class="team-grid" id="teamGrid"></div>
         </section>
 
-        <section class="panel bottom">
-          <div class="section-title">ABCDE snapshot <span>Primary intent</span></div>
-          <div class="metrics-grid" id="metricsGrid"></div>
-        </section>
+        <details class="panel bottom dropdown-panel">
+          <summary>ABCDE snapshot</summary>
+          <div class="dropdown-content">
+            <div class="metrics-grid" id="metricsGrid"></div>
+          </div>
+        </details>
 
-        <section class="panel bottom">
-          <div class="section-title">Weekly review <span>Keep it real</span></div>
-          <div class="note-card">
-            <h3>What have I learnt this week?</h3>
-            <p>Simple reflections. This is the part that can sync back into Notion later.</p>
-            <textarea id="weeklyLearning"></textarea>
+        <details class="panel bottom dropdown-panel">
+          <summary>Weekly review</summary>
+          <div class="dropdown-content">
+            <div class="note-card">
+              <h3>What have I learnt this week?</h3>
+              <p>Simple reflections. This is the part that can sync back into Notion later.</p>
+              <textarea id="weeklyLearning"></textarea>
+            </div>
+            <div class="note-card">
+              <h3>Team concerns / FAQ</h3>
+              <p>Use this to collect the concerns/challenges from your team before reviews.</p>
+              <textarea id="teamFaq"></textarea>
+            </div>
           </div>
-          <div class="note-card">
-            <h3>Team concerns / FAQ</h3>
-            <p>Use this to collect the concerns/challenges from your team before reviews.</p>
-            <textarea id="teamFaq"></textarea>
-          </div>
-        </section>
+        </details>
       </main>
     </div>
   </div>
