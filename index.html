@@ -775,7 +775,7 @@
           }
         },
         Tuesday: { theme: '', calendar: [], fixed: [], must: [task('review team progress', 'C')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
-        Wednesday: { theme: '', calendar: [task('GSPA (Diamonds)', 'C'), task('Xinru Booth Shift (Afternoon) — need leave early for class', 'B')], fixed: [task('GSPA (Diamonds)', 'C')], must: [task('watch Xinru — may need leave early for class', 'C')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
+        Wednesday: { theme: '', calendar: [task('9am–2pm — Admiralty booth (Morning)', 'B'), task('3pm — leave for GSPA', 'A'), task('5pm — GSPA (Diamonds)', 'C'), task('Xinru Booth Shift (Afternoon) — need leave early for class', 'B')], fixed: [task('GSPA (Diamonds)', 'C')], must: [task('watch Xinru — may need leave early for class', 'C')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
         Thursday: { theme: '', calendar: [task('10:30am — KAH meeting', 'C')], fixed: [task('10:30am — KAH meeting', 'C')], must: [task('support team booths if free', 'C')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
         Friday: { theme: '', calendar: [], fixed: [], must: [task('follow ups + team check-ins', 'B')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
         Saturday: { theme: '', calendar: [task('7pm — Enspire Orientation', 'C')], fixed: [task('7pm — Enspire Orientation', 'C')], must: [task('church stuff may affect booth timing', 'A')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
@@ -815,7 +815,16 @@
           if (!Array.isArray(next.days[day][lane])) next.days[day][lane] = structuredClone(seed.days[day][lane] || []);
         });
       });
+      ensureCalendarItem(next, 'Wednesday', '9am–2pm — Admiralty booth (Morning)', 'B');
+      ensureCalendarItem(next, 'Wednesday', '3pm — leave for GSPA', 'A');
+      ensureCalendarItem(next, 'Wednesday', '5pm — GSPA (Diamonds)', 'C');
       return next;
+    }
+
+    function ensureCalendarItem(next, day, text, code='C') {
+      const list = next.days?.[day]?.calendar;
+      if (!Array.isArray(list)) return;
+      if (!list.some(item => item.text === text)) list.push(task(text, code));
     }
 
     function saveState() {
