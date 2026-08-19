@@ -741,14 +741,33 @@
       E: {label: 'E Time Waster', color: 'Grey', detail: 'scrolling / low-value distraction'}
     };
 
+    function singaporeNow() {
+      return new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Singapore'}));
+    }
+
+    function todayDayName() {
+      return singaporeNow().toLocaleDateString('en-SG', {weekday:'long'});
+    }
+
+    function currentWeekLabel() {
+      const now = singaporeNow();
+      const dayIndex = (now.getDay() + 6) % 7; // Monday = 0
+      const mon = new Date(now); mon.setDate(now.getDate() - dayIndex);
+      const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+      const sameMonth = mon.getMonth() === sun.getMonth();
+      const monLabel = sameMonth ? String(mon.getDate()) : mon.toLocaleDateString('en-SG', {day:'numeric', month:'short'});
+      const sunLabel = sun.toLocaleDateString('en-SG', {day:'numeric', month:'short'});
+      return `${monLabel}–${sunLabel}`;
+    }
+
     const defaultSystemNotes = () => ({
       workoutLog: '',
       learningToday: ''
     });
 
     const seed = {
-      week: '10–16 Aug',
-      activeDay: 'Monday',
+      week: currentWeekLabel(),
+      activeDay: todayDayName(),
       notes: {
         weeklyLearning: 'Focus on the why behind the target, not just the target.\nThe workday starts the night before — plan tomorrow before tomorrow starts.',
         teamFaq: 'Prepare concerns and challenges faced while handling team members.\nCreate FAQ and discuss together next meet.'
@@ -791,18 +810,41 @@
       return { id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()), text, code, done: true };
     }
 
+    function blankDay() {
+      return {
+        theme: '', calendar: [], fixed: [], must: [], ifTime: [],
+        salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')],
+        healthSystem: [task('Workout Today', 'D')],
+        personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')],
+        systemNotes: defaultSystemNotes()
+      };
+    }
+
+    function freshCurrentWeek(previous={}) {
+      const next = structuredClone(seed);
+      next.week = currentWeekLabel();
+      next.activeDay = todayDayName();
+      next.notes = previous.notes || structuredClone(seed.notes);
+      next.team = previous.team || structuredClone(seed.team);
+      next.days = Object.fromEntries(days.map(day => [day, blankDay()]));
+      return next;
+    }
+
     let state = loadState();
 
     function loadState() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? migrateState(JSON.parse(raw)) : structuredClone(seed);
-      } catch { return structuredClone(seed); }
+        return raw ? migrateState(JSON.parse(raw)) : freshCurrentWeek();
+      } catch { return freshCurrentWeek(); }
     }
 
     function migrateState(next) {
-      next.week ||= seed.week;
-      next.activeDay ||= 'Monday';
+      const thisWeek = currentWeekLabel();
+      const today = todayDayName();
+      if (next.week !== thisWeek) return freshCurrentWeek(next);
+      next.week = thisWeek;
+      next.activeDay = today;
       next.notes ||= structuredClone(seed.notes);
       next.team ||= structuredClone(seed.team);
       next.team.forEach((member, index) => {
@@ -819,34 +861,36 @@
           if (!Array.isArray(next.days[day][lane])) next.days[day][lane] = structuredClone(seed.days[day][lane] || []);
         });
       });
-      ensureCalendarItem(next, 'Wednesday', '9am–2pm — Admiralty booth (Morning)', 'B');
-      ensureCalendarItem(next, 'Wednesday', '3:30pm — going GSPA', 'A');
-      ensureCalendarItem(next, 'Wednesday', '5pm — GSPA (Diamonds)', 'C');
-      ensureLaneItem(next, 'Wednesday', 'calendar', 'go gym right before GSPA', 'D');
-      ensureLaneItem(next, 'Wednesday', 'must', 'launch something for My dm ads', 'C');
-      ensureLaneItem(next, 'Wednesday', 'must', 'go booth and do some proper outreach, get leads to be on track', 'B');
-      ensureLaneItem(next, 'Wednesday', 'must', 'do some booth before GSPA, dw waste time on admin before', 'B');
-      ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — followup properly', 'B');
-      ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — redo labels', 'C');
-      ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — export the WhatsApp', 'C');
-      ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — read', 'D');
-      ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — reflect DAR', 'D');
-      ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — bond, chill in pool and relax', 'D');
-      ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — build AI stuff, prompt it asking what else can I do', 'C');
-      ensureLaneItem(next, 'Wednesday', 'healthSystem', 'go gym right before GSPA', 'D');
-      markLaneItemDone(next, 'Wednesday', 'must', 'GSPA — read');
-      markLaneItemDone(next, 'Wednesday', 'must', 'GSPA — bond, chill in pool and relax');
-      markLaneItemDone(next, 'Wednesday', 'must', 'go booth and do some proper outreach, get leads to be on track');
-      markLaneItemDone(next, 'Wednesday', 'calendar', 'go gym right before GSPA');
-      markLaneItemDone(next, 'Wednesday', 'healthSystem', 'go gym right before GSPA');
-      deleteLaneItem(next, 'Wednesday', 'must', 'watch Xinru — may need leave early for class');
-      ensureCalendarItem(next, 'Friday', '10am–1pm — Admiralty booth (Morning)', 'B');
-      ensureCalendarItem(next, 'Friday', '1pm — leave for Clementi aftn shift IC', 'A');
-      ensureCalendarItem(next, 'Saturday', '8am — leave house for Admiralty', 'A');
-      ensureCalendarItem(next, 'Saturday', '10am–1pm — Admiralty booth (Morning)', 'B');
-      ensureCalendarItem(next, 'Saturday', 'aftn — settle the WhatsApp thing', 'C');
-      ensureLaneItem(next, 'Saturday', 'must', 'settle the WhatsApp thing', 'C');
-      ensureLaneItem(next, 'Saturday', 'must', 'MUST ENROL THE RASHIDDD', 'B');
+      if (next.week === '10–16 Aug') {
+        ensureCalendarItem(next, 'Wednesday', '9am–2pm — Admiralty booth (Morning)', 'B');
+        ensureCalendarItem(next, 'Wednesday', '3:30pm — going GSPA', 'A');
+        ensureCalendarItem(next, 'Wednesday', '5pm — GSPA (Diamonds)', 'C');
+        ensureLaneItem(next, 'Wednesday', 'calendar', 'go gym right before GSPA', 'D');
+        ensureLaneItem(next, 'Wednesday', 'must', 'launch something for My dm ads', 'C');
+        ensureLaneItem(next, 'Wednesday', 'must', 'go booth and do some proper outreach, get leads to be on track', 'B');
+        ensureLaneItem(next, 'Wednesday', 'must', 'do some booth before GSPA, dw waste time on admin before', 'B');
+        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — followup properly', 'B');
+        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — redo labels', 'C');
+        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — export the WhatsApp', 'C');
+        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — read', 'D');
+        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — reflect DAR', 'D');
+        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — bond, chill in pool and relax', 'D');
+        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — build AI stuff, prompt it asking what else can I do', 'C');
+        ensureLaneItem(next, 'Wednesday', 'healthSystem', 'go gym right before GSPA', 'D');
+        markLaneItemDone(next, 'Wednesday', 'must', 'GSPA — read');
+        markLaneItemDone(next, 'Wednesday', 'must', 'GSPA — bond, chill in pool and relax');
+        markLaneItemDone(next, 'Wednesday', 'must', 'go booth and do some proper outreach, get leads to be on track');
+        markLaneItemDone(next, 'Wednesday', 'calendar', 'go gym right before GSPA');
+        markLaneItemDone(next, 'Wednesday', 'healthSystem', 'go gym right before GSPA');
+        deleteLaneItem(next, 'Wednesday', 'must', 'watch Xinru — may need leave early for class');
+        ensureCalendarItem(next, 'Friday', '10am–1pm — Admiralty booth (Morning)', 'B');
+        ensureCalendarItem(next, 'Friday', '1pm — leave for Clementi aftn shift IC', 'A');
+        ensureCalendarItem(next, 'Saturday', '8am — leave house for Admiralty', 'A');
+        ensureCalendarItem(next, 'Saturday', '10am–1pm — Admiralty booth (Morning)', 'B');
+        ensureCalendarItem(next, 'Saturday', 'aftn — settle the WhatsApp thing', 'C');
+        ensureLaneItem(next, 'Saturday', 'must', 'settle the WhatsApp thing', 'C');
+        ensureLaneItem(next, 'Saturday', 'must', 'MUST ENROL THE RASHIDDD', 'B');
+      }
       return next;
     }
 
@@ -1007,7 +1051,7 @@
       document.getElementById('weeklyLearning').value = state.notes.weeklyLearning || '';
       document.getElementById('teamFaq').value = state.notes.teamFaq || '';
       document.getElementById('weekLabel').textContent = `Weekly Planning · ${state.week}`;
-      const today = new Date().toLocaleDateString('en-SG', {weekday:'long', timeZone:'Asia/Singapore'});
+      const today = todayDayName();
       document.getElementById('todayTitle').textContent = today;
       const n = state.days[today] ? totalDayTasks(today) : totalDayTasks(state.activeDay);
       document.getElementById('todaySummary').textContent = `${n} open item${n === 1 ? '' : 's'} · keep it simple`;
