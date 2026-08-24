@@ -765,6 +765,8 @@
       learningToday: ''
     });
 
+    const nightlyCalendarSync = {"week": "24–30 Aug", "days": {"Monday": [["Manager Monday (Meetings & Build Momentum for Team)", "C"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["7:30am–8:45am — exercise with Edrick", "D"], ["9am–2pm — Carynn Booth", "B"], ["9am–2pm — Leslie Booth", "B"], ["9am–6pm — TEO HWEE SHAN PHG", "C"], ["12pm–12:30pm — yk Cheng Chinese", "C"], ["5pm–6pm — Entrepreneur Meeting", "C"], ["6pm–6:30pm — Leslie Weekly Review", "C"], ["7pm–10pm — Momentum Monday 🤗", "C"]], "Tuesday": [["Financial Reporting Day", "C"], ["Tuesday (Review for Team)", "C"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["8:15am–11:30am — Decision Analysis OPIM101", "D"], ["9am–2pm — Carynn Booth", "B"], ["9am–2pm — Xinru Booth", "B"], ["9am–6pm — TEO HWEE SHAN PHG", "C"], ["2pm–7pm — Xinru Booth", "B"], ["3pm–5:30pm — Time Block for Weekly Reviews", "C"]], "Wednesday": [["Wednesday (Ensure team on track for rising star)", "C"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["8:15am–11:30am — Management of People at Work OBHR101", "D"], ["9am–2pm — Carynn Booth", "B"], ["9am–6:01pm — TEO HWEE SHAN PHG", "C"], ["12pm–3:15pm — Psy of Reasoning & Thinking PSYC204", "D"], ["2pm–7pm — Leslie Booth", "B"]], "Thursday": [["Thursday (Focus on self + school work)", "D"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["9am–2pm — Carynn Booth", "B"], ["9am–2pm — Xinru Booth", "B"], ["2pm–7pm — Carynn Booth", "B"], ["2pm–7pm — Xinru Booth", "B"], ["7pm–10pm — Carynn Booth", "B"]], "Friday": [["Focused Friday (Lock in for personal sales)", "C"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["8am–2pm — NG SIEW SIEW TTP", "C"], ["9am–2pm — Xinru Booth", "B"], ["2pm–7pm — Carynn Booth", "B"], ["2pm–7pm — Leslie Booth", "B"], ["2pm–7pm — Xinru Booth", "B"], ["7pm–10pm — Carynn Booth", "B"]], "Saturday": [["Saturday (Focus on team/personal)", "C"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["8am–2pm — Sabai Doreen TCB", "C"], ["8am–2pm — TEO HWEE SHAN MPC", "C"], ["8am–2pm — Tan Bee Geok Baking Class", "D"], ["8am–2pm — Thilagavathy TCB", "C"], ["9am–2pm — Leslie Booth", "B"], ["9am–2pm — Xinru Booth", "B"], ["9am–6pm — Thida Oo tiktok ai & communication", "C"], ["2pm–7pm — Carynn Booth", "B"], ["2pm–7pm — Xinru Booth", "B"], ["7pm–10pm — Carynn Booth", "B"]], "Sunday": [["Sunday (Focus on Reflection + Planning)", "C"], ["Sunday Clean up (Media, Fireflies, Declutter)", "C"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["9am–2pm — Xinru Booth", "B"], ["2pm–7pm — Carynn Booth", "B"], ["2pm–7pm — Leslie Booth", "B"], ["2pm–7pm — Xinru Booth", "B"], ["10pm–10:30pm — Weekly Review for Carynn", "C"]]}};
+
     const seed = {
       week: currentWeekLabel(),
       activeDay: todayDayName(),
@@ -810,6 +812,17 @@
       return { id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()), text, code, done: true };
     }
 
+    function applyNightlyCalendarSync(next) {
+      if (!nightlyCalendarSync || next.week !== nightlyCalendarSync.week) return next;
+      days.forEach(day => {
+        const entries = nightlyCalendarSync.days?.[day];
+        if (!Array.isArray(entries)) return;
+        next.days[day] ||= blankDay();
+        next.days[day].calendar = entries.map(([text, code]) => task(text, code || 'C'));
+      });
+      return next;
+    }
+
     function blankDay() {
       return {
         theme: '', calendar: [], fixed: [], must: [], ifTime: [],
@@ -827,6 +840,7 @@
       next.notes = previous.notes || structuredClone(seed.notes);
       next.team = previous.team || structuredClone(seed.team);
       next.days = Object.fromEntries(days.map(day => [day, blankDay()]));
+      applyNightlyCalendarSync(next);
       return next;
     }
 
@@ -861,6 +875,7 @@
           if (!Array.isArray(next.days[day][lane])) next.days[day][lane] = structuredClone(seed.days[day][lane] || []);
         });
       });
+      applyNightlyCalendarSync(next);
       if (next.week === '10–16 Aug') {
         ensureCalendarItem(next, 'Wednesday', '9am–2pm — Admiralty booth (Morning)', 'B');
         ensureCalendarItem(next, 'Wednesday', '3:30pm — going GSPA', 'A');
