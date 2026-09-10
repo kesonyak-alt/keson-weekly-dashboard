@@ -2,1245 +2,240 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Keson Weekly Command Center</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Weekly Dashboard</title>
   <style>
     :root {
-      --bg: #f7f3ea;
-      --paper: #fffaf1;
-      --ink: #1b1a17;
-      --muted: #716b60;
-      --line: rgba(53, 44, 29, .13);
-      --accent: #111827;
-      --gold: #e2b857;
-      --sage: #9bb68b;
-      --avocado: #b7d66b;
-      --peacock: #4aa4a5;
-      --citron: #d3d956;
-      --yellow: #f3cf57;
-      --danger: #e36c5a;
-      --shadow: 0 20px 70px rgba(51, 40, 20, .13);
-      --radius-xl: 32px;
-      --radius-lg: 22px;
-      --radius-md: 15px;
-      --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", "Segoe UI", sans-serif;
+      --text: rgb(55, 53, 47);
+      --muted: rgba(55, 53, 47, .65);
+      --faint: rgba(55, 53, 47, .09);
+      --hover: rgba(55, 53, 47, .055);
+      --orange-bg: rgb(250, 222, 201);
+      --gray-bg: rgb(241, 241, 239);
     }
-
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html { background: #fff; }
     body {
       margin: 0;
-      min-height: 100vh;
-      color: var(--ink);
-      font-family: var(--font);
-      background:
-        radial-gradient(circle at top left, rgba(211, 217, 86, .42), transparent 30rem),
-        radial-gradient(circle at top right, rgba(74, 164, 165, .22), transparent 28rem),
-        linear-gradient(135deg, #fbf7ee 0%, #f4ead9 100%);
-    }
-
-    button, input, textarea, select { font: inherit; }
-    button { cursor: pointer; }
-
-    .app {
-      width: min(1220px, calc(100% - 28px));
-      margin: 0 auto;
-      padding: 22px 0 38px;
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(290px, .85fr);
-      gap: 18px;
-      align-items: stretch;
-      margin-bottom: 18px;
-    }
-
-    .panel {
-      background: rgba(255, 250, 241, .84);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-    }
-
-    .intro {
-      padding: 28px;
-      min-height: 258px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .intro:after {
-      content: "";
-      position: absolute;
-      width: 290px;
-      height: 290px;
-      right: -105px;
-      top: -95px;
-      border-radius: 999px;
-      background: conic-gradient(from 180deg, rgba(226,184,87,.4), rgba(183,214,107,.4), rgba(74,164,165,.28), rgba(226,184,87,.4));
-      filter: blur(.5px);
-      opacity: .85;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 34px;
-      padding: 7px 12px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--muted);
-      background: rgba(255,255,255,.45);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: .02em;
-      position: relative;
-      z-index: 1;
-    }
-
-    .pulse {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--avocado);
-      box-shadow: 0 0 0 5px rgba(183, 214, 107, .2);
-    }
-
-    h1 {
-      font-size: clamp(38px, 6vw, 76px);
-      line-height: .88;
-      letter-spacing: -.06em;
-      margin: 22px 0 14px;
-      max-width: 760px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: clamp(15px, 2vw, 18px);
-      line-height: 1.55;
-      max-width: 650px;
-      margin: 0;
-      position: relative;
-      z-index: 1;
-    }
-
-    .quick-actions {
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .today-card {
-      background: #14140f;
-      color: #fff8e6;
-      border-radius: 26px;
-      padding: 20px;
-      min-height: 176px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .today-card:before {
-      content: "";
-      position: absolute;
-      inset: auto -60px -80px auto;
-      width: 180px;
-      height: 180px;
-      background: var(--gold);
-      border-radius: 999px;
-      opacity: .24;
-    }
-
-    .today-card small { color: rgba(255,248,230,.68); font-weight: 750; text-transform: uppercase; letter-spacing: .08em; }
-    .today-card h2 { margin: 10px 0 0; font-size: 34px; letter-spacing: -.04em; }
-    .today-card p { margin: 8px 0 0; color: rgba(255,248,230,.78); line-height: 1.45; }
-
-    .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .btn {
-      min-height: 46px;
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      background: rgba(255,255,255,.58);
-      color: var(--ink);
-      padding: 0 14px;
-      font-weight: 800;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: transform .16s ease, background .16s ease, border-color .16s ease;
-      text-decoration: none;
-    }
-    .btn:hover { transform: translateY(-1px); background: rgba(255,255,255,.86); }
-    .btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-    .btn.ghost { background: transparent; }
-    .btn.danger { color: #8f2117; background: rgba(227, 108, 90, .12); }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 310px minmax(0, 1fr);
-      gap: 18px;
-      align-items: start;
-    }
-
-    .sidebar {
-      padding: 16px;
-      position: sticky;
-      top: 16px;
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin: 0 0 12px;
-      font-size: 13px;
-      font-weight: 900;
-      text-transform: uppercase;
-      color: var(--muted);
-      letter-spacing: .08em;
-    }
-
-    .day-tabs { display: grid; gap: 8px; }
-    .day-tab {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      min-height: 50px;
-      padding: 8px 12px;
-      border: 1px solid transparent;
-      border-radius: 16px;
-      background: transparent;
-      color: var(--muted);
-      text-align: left;
-      transition: .16s ease;
-    }
-    .day-tab strong { color: var(--ink); }
-    .day-tab.active {
+      color: var(--text);
       background: #fff;
-      border-color: var(--line);
-      box-shadow: 0 10px 26px rgba(44, 35, 22, .08);
-      color: var(--ink);
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
     }
-    .count {
-      min-width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      background: rgba(27,26,23,.08);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .main { display: grid; gap: 18px; }
-    .day-board { padding: 20px; }
-    .day-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: flex-start;
-      margin-bottom: 18px;
-    }
-    .day-header h2 { margin: 0; font-size: clamp(30px, 4vw, 48px); line-height: .95; letter-spacing: -.05em; }
-    .day-header p { margin: 8px 0 0; color: var(--muted); }
-
-    .columns {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 12px;
-    }
-
-    .lane {
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background: rgba(255,255,255,.42);
-      padding: 12px;
-      min-height: 250px;
-    }
-    .lane h3 {
-      margin: 2px 2px 12px;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--muted);
+    button, input { font: inherit; }
+    .topbar {
+      height: 45px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-    }
-    .lane[data-lane="must"] { background: linear-gradient(180deg, rgba(255, 111, 111, .24), rgba(255,255,255,.5)); border-color: rgba(215, 72, 72, .22); }
-    .lane[data-lane="ifTime"] { background: linear-gradient(180deg, rgba(255, 196, 0, .62), rgba(255, 229, 111, .38)); border-color: rgba(188, 136, 0, .46); }
-    .lane[data-lane="salesSystem"] { background: linear-gradient(180deg, rgba(102, 165, 255, .26), rgba(255,255,255,.5)); border-color: rgba(65, 125, 210, .22); }
-    .lane[data-lane="healthSystem"] { background: linear-gradient(180deg, rgba(87, 190, 132, .25), rgba(255,255,255,.5)); border-color: rgba(61, 145, 94, .22); }
-    .lane[data-lane="personalGrowthSystem"] { background: linear-gradient(180deg, rgba(164, 124, 255, .24), rgba(255,255,255,.5)); border-color: rgba(126, 84, 220, .22); }
-    .task-list { display: grid; gap: 10px; }
-    .system-note-stack { display: grid; gap: 10px; margin-top: 12px; }
-    .system-field { display: grid; gap: 7px; }
-    .system-field label {
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .system-field textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: rgba(255,253,248,.86);
-      padding: 11px 12px;
-      resize: vertical;
-      outline: 0;
-      line-height: 1.45;
-      color: var(--ink);
-      min-height: 92px;
-    }
-    .system-field textarea:focus { border-color: rgba(27,26,23,.38); }
-    .meals-log { min-height: 180px; }
-    .theme-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 14px;
-      padding: 14px 16px;
-      border-radius: 22px;
-      border: 1px solid rgba(226,184,87,.35);
-      background: linear-gradient(135deg, rgba(243,207,87,.42), rgba(255,253,248,.72));
-    }
-    .theme-card span {
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: #725915;
-    }
-    .theme-card input {
-      width: 100%;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: var(--ink);
-      font-weight: 900;
-      font-size: clamp(17px, 2vw, 23px);
-      text-align: right;
-      min-height: 36px;
-    }
-    .task {
-      display: grid;
-      grid-template-columns: 24px minmax(0, 1fr) auto;
-      gap: 10px;
-      align-items: start;
-      padding: 12px;
-      border-radius: 17px;
-      background: #fffdf8;
-      border: 1px solid rgba(53,44,29,.09);
-      box-shadow: 0 8px 20px rgba(44, 35, 22, .045);
-    }
-    .task.done { opacity: .62; }
-    .task.done .task-text { text-decoration: line-through; color: var(--muted); }
-    .task input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--ink); margin: 1px 0 0; }
-    .task-text {
-      border: 0;
-      outline: 0;
-      background: transparent;
-      resize: none;
-      min-height: 24px;
-      width: 100%;
-      color: var(--ink);
-      line-height: 1.35;
-      padding: 0;
-    }
-    .task-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 25px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(27, 26, 23, .06);
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      border: 1px solid rgba(27, 26, 23, .05);
-    }
-    .chip.b { background: rgba(155,182,139,.28); color: #41573a; }
-    .chip.c { background: rgba(243,207,87,.34); color: #725915; }
-    .chip.d { background: rgba(183,214,107,.36); color: #425a18; }
-    .chip.a, .chip.e { background: rgba(113,107,96,.14); }
-    .delete {
-      border: 0;
-      background: transparent;
-      color: rgba(113,107,96,.55);
-      font-weight: 900;
-      font-size: 18px;
-      padding: 0 2px;
-    }
-    .delete:hover { color: var(--danger); }
-
-    .add-form {
-      display: grid;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .add-form textarea, .add-form select, .add-form input {
-      width: 100%;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.72);
-      border-radius: 14px;
-      padding: 11px 12px;
-      outline: none;
-      min-height: 44px;
-    }
-    .add-form textarea:focus, .add-form select:focus, .add-form input:focus { border-color: rgba(27,26,23,.38); }
-
-    .team-grid, .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-    }
-    .team-card, .metric-card, .note-card {
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background: rgba(255,255,255,.5);
-      padding: 16px;
-    }
-    .team-card h3, .metric-card h3, .note-card h3 { margin: 0 0 10px; letter-spacing: -.02em; }
-    .team-card p, .metric-card p, .note-card p { margin: 0; color: var(--muted); line-height: 1.45; }
-    .team-card h3 { display: flex; align-items: center; }
-    .team-section { margin-top: 12px; display: grid; gap: 7px; }
-    .team-section label {
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .team-section textarea {
-      width: 100%;
-      min-height: 74px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: #fffdf8;
-      padding: 11px 12px;
-      resize: vertical;
-      outline: 0;
-      line-height: 1.4;
-      color: var(--ink);
-    }
-    .team-section textarea.current-status {
-      min-height: 92px;
-      max-height: 112px;
-    }
-    .status-hint {
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: -2px;
-    }
-    .team-section textarea:focus { border-color: rgba(27,26,23,.38); }
-    .person-dot { width: 11px; height: 11px; border-radius: 999px; display: inline-block; margin-right: 8px; flex: 0 0 auto; }
-    .carynn { background: var(--yellow); }
-    .leslie { background: var(--peacock); }
-    .xinru { background: var(--avocado); }
-    .tc { background: var(--citron); }
-
-    .bottom { padding: 20px; display: grid; gap: 18px; }
-    .dropdown-panel { padding: 14px; }
-    .dropdown-panel summary {
-      list-style: none;
-      cursor: pointer;
-      user-select: none;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: rgba(255,253,248,.78);
-      padding: 14px 16px;
-      font-weight: 900;
-      letter-spacing: -.01em;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 48px;
-    }
-    .dropdown-panel summary::-webkit-details-marker { display: none; }
-    .dropdown-panel summary::after {
-      content: '⌄';
-      font-size: 18px;
-      color: var(--muted);
-      transition: transform .18s ease;
-    }
-    .dropdown-panel[open] summary::after { transform: rotate(180deg); }
-    .dropdown-content { padding-top: 16px; display: grid; gap: 18px; }
-    .note-card textarea {
-      width: 100%;
-      min-height: 130px;
-      margin-top: 12px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: #fffdf8;
-      padding: 13px;
-      resize: vertical;
-      outline: 0;
-      line-height: 1.45;
-    }
-
-    dialog {
-      width: min(620px, calc(100% - 28px));
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      padding: 0;
-      background: var(--paper);
-      box-shadow: var(--shadow);
-    }
-    dialog::backdrop { background: rgba(20,20,15,.45); backdrop-filter: blur(4px); }
-    .dialog-body { padding: 22px; }
-    .dialog-body h2 { margin: 0 0 8px; letter-spacing: -.04em; font-size: 32px; }
-    .dialog-body p { margin: 0 0 16px; color: var(--muted); }
-    .dialog-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
-    .json-box {
-      width: 100%;
-      min-height: 230px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      padding: 12px;
-      background: #fffdf8;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 12px;
-    }
-
-    .toast {
+      padding: 0 12px;
       position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%) translateY(20px);
-      opacity: 0;
+      inset: 0 0 auto 0;
+      z-index: 20;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(12px);
+    }
+    .crumb {
+      max-width: calc(100vw - 170px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .notion-link {
+      text-decoration: none;
+      color: var(--text);
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .notion-link:hover { background: var(--hover); }
+    .cover {
+      width: 100%;
+      height: min(30vh, 280px);
+      min-height: 190px;
+      margin-top: 45px;
+      overflow: hidden;
+      background: var(--gray-bg);
+    }
+    .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .page {
+      width: min(100% - 48px, 1180px);
+      margin: 0 auto;
+      padding: 48px 0 18vh;
+    }
+    .page-title {
+      margin: 0 0 30px;
+      font-size: clamp(34px, 5vw, 42px);
+      line-height: 1.2;
+      letter-spacing: -.03em;
+      font-weight: 700;
+      color: var(--text);
+      word-break: break-word;
+    }
+    .page-meta { display: flex; gap: 8px; margin: -18px 0 28px; color: var(--muted); font-size: 13px; }
+    .block { margin: 1px 0; min-height: 1.5em; }
+    .paragraph { padding: 3px 2px; line-height: 1.5; }
+    .empty { min-height: 26px; }
+    .quote {
+      border-left: 3px solid currentColor;
+      padding: 3px 14px;
+      margin: 8px 0 18px;
+      font-size: 1.05em;
+      line-height: 1.5;
+    }
+    h1.block, h2.block, h3.block { color: var(--text); padding: 3px 2px; }
+    h1.block { font-size: 1.875em; margin: 30px 0 4px; }
+    h2.block { font-size: 1.5em; margin: 24px 0 3px; }
+    h3.block { font-size: 1.25em; margin: 20px 0 2px; }
+    .divider { height: 1px; background: rgba(55,53,47,.16); margin: 8px 0; }
+    .columns { display: flex; gap: 46px; align-items: flex-start; width: 100%; }
+    .column { flex: 1 1 0; min-width: 0; }
+    .callout {
+      display: grid;
+      grid-template-columns: 24px minmax(0,1fr);
+      gap: 8px;
+      border-radius: 3px;
+      padding: 14px 16px;
+      margin: 4px 0;
+      line-height: 1.45;
+      background: var(--gray-bg);
+    }
+    .callout.orange_background { background: var(--orange-bg); }
+    .callout.default_background { background: var(--gray-bg); }
+    .callout-icon { width: 24px; font-size: 20px; line-height: 1.25; }
+    .callout-title { font-weight: 600; min-height: 1.5em; }
+    .callout-children { margin-top: 5px; }
+    .todo, .list-item {
+      display: grid;
+      grid-template-columns: 20px minmax(0,1fr);
+      gap: 4px;
+      padding: 3px 2px;
+      min-height: 28px;
+      line-height: 1.45;
+    }
+    .todo-box {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      margin: 3px 0 0;
+      border: 1.4px solid rgba(55,53,47,.6);
+      border-radius: 2px;
+      display: grid;
+      place-items: center;
       pointer-events: none;
-      background: #14140f;
-      color: #fff8e6;
-      border-radius: 999px;
-      padding: 12px 16px;
-      font-weight: 800;
-      box-shadow: 0 14px 40px rgba(0,0,0,.2);
-      transition: .22s ease;
-      z-index: 9;
     }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    .notion-mirror {
-      padding: 22px;
-      margin-bottom: 18px;
-    }
-    .notion-mirror-head {
+    .todo.done .todo-box { border-color: rgb(35,131,226); background: rgb(35,131,226); }
+    .todo.done .todo-box::after { content: "✓"; color: #fff; font-size: 12px; line-height: 1; }
+    .todo.done .todo-text { text-decoration: line-through; color: rgba(55,53,47,.55); }
+    .bullet { text-align: center; line-height: 1.3; font-size: 19px; }
+    details.toggle { padding: 3px 2px; }
+    details.toggle > summary { cursor: pointer; list-style: none; display: flex; gap: 6px; line-height: 1.5; }
+    details.toggle > summary::-webkit-details-marker { display: none; }
+    details.toggle > summary::before { content: "▶"; color: var(--muted); font-size: 10px; margin-top: 5px; width: 14px; text-align: center; }
+    details.toggle[open] > summary::before { transform: rotate(90deg); }
+    .toggle-children { padding-left: 20px; }
+    .page-link {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 18px;
-      margin-bottom: 16px;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+      padding: 3px 2px;
+      color: inherit;
+      font-weight: 600;
+      text-decoration: underline;
+      text-decoration-color: rgba(55,53,47,.25);
+      text-underline-offset: 3px;
     }
-    .notion-mirror-head h2 { margin: 3px 0 5px; font-size: clamp(26px, 4vw, 42px); letter-spacing: -.045em; }
-    .notion-mirror-head p { margin: 0; color: var(--muted); }
-    .sync-pill {
-      flex: 0 0 auto;
-      padding: 8px 11px;
-      border-radius: 999px;
-      background: rgba(155, 182, 139, .2);
-      color: #42593b;
-      font-size: 12px;
-      font-weight: 850;
-      border: 1px solid rgba(66, 89, 59, .16);
-    }
-    .notion-goals {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin: 0 0 14px;
-      padding: 0;
-      list-style: none;
-    }
-    .notion-goal {
-      min-height: 72px;
-      padding: 14px;
-      border-radius: 17px;
-      background: #171711;
-      color: #fff8e6;
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      line-height: 1.35;
-      font-weight: 730;
-    }
-    .notion-goal span { color: var(--gold); font-weight: 950; }
-    .notion-week-grid {
-      display: grid;
-      grid-template-columns: repeat(7, minmax(150px, 1fr));
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 3px;
-    }
-    .notion-day {
-      min-width: 150px;
-      padding: 13px;
-      border: 1px solid var(--line);
-      border-radius: 17px;
-      background: rgba(255,255,255,.56);
-    }
-    .notion-day.is-today { border-color: rgba(226,184,87,.8); box-shadow: inset 0 0 0 1px rgba(226,184,87,.34); }
-    .notion-day h3 { margin: 0 0 10px; font-size: 14px; }
-    .notion-day ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-    .notion-task { display: grid; grid-template-columns: 17px 1fr; gap: 7px; color: var(--ink); font-size: 13px; line-height: 1.32; }
-    .notion-task .box { width: 15px; height: 15px; margin-top: 1px; border: 1.5px solid #9d9588; border-radius: 4px; display: grid; place-items: center; font-size: 10px; }
-    .notion-task.done { color: var(--muted); text-decoration: line-through; }
-    .notion-task.done .box { background: var(--sage); border-color: var(--sage); color: white; text-decoration: none; }
-    .notion-empty { color: var(--muted); font-size: 12px; }
-    .notion-source { margin-top: 13px; color: var(--muted); font-size: 12px; }
-    .notion-source a { color: inherit; font-weight: 800; }
-
-    @media (max-width: 920px) {
-      .hero, .layout { grid-template-columns: 1fr; }
-      .notion-goals { grid-template-columns: 1fr; }
-      .sidebar { position: static; }
-      .day-tabs { grid-template-columns: repeat(7, minmax(88px, 1fr)); overflow-x: auto; padding-bottom: 3px; }
-      .day-tab { min-width: 88px; flex-direction: column; align-items: flex-start; }
-      .columns { grid-template-columns: 1fr; }
-      .team-grid, .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-
-    @media (max-width: 560px) {
-      .app { width: min(100% - 18px, 1220px); padding-top: 9px; }
-      .intro { padding: 20px; min-height: 230px; }
-      .quick-actions, .sidebar, .day-board, .bottom, .notion-mirror { padding: 12px; }
-      .notion-mirror-head { flex-direction: column; gap: 10px; }
-      .action-row { grid-template-columns: 1fr; }
-      .team-grid, .metrics-grid { grid-template-columns: 1fr; }
-      .day-header { flex-direction: column; }
-      h1 { font-size: 46px; }
-      .today-card h2 { font-size: 29px; }
+    .notion-image { width: 100%; margin: 8px 0; }
+    .notion-image img { display: block; max-width: 100%; max-height: 720px; object-fit: contain; border-radius: 1px; }
+    .embed-wrap { width: 100%; min-height: 90px; margin: 8px 0; overflow: hidden; }
+    .embed-wrap iframe { width: 100%; height: 110px; border: 0; }
+    .rich.bold { font-weight: 700; }
+    .rich.italic { font-style: italic; }
+    .rich.strikethrough { text-decoration: line-through; }
+    .rich.underline { text-decoration: underline; }
+    .rich.code { background: rgba(135,131,120,.15); color: #eb5757; border-radius: 3px; padding: .15em .3em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 85%; }
+    .rich-link { color: inherit; text-decoration: underline; text-decoration-color: rgba(55,53,47,.35); text-underline-offset: 2px; }
+    .synced { color: var(--muted); font-size: 12px; padding: 16px 2px 0; }
+    .unsupported { display: none; }
+    @media (max-width: 760px) {
+      .cover { height: 190px; min-height: 150px; }
+      .page { width: min(100% - 30px, 1180px); padding-top: 32px; }
+      .page-title { margin-bottom: 24px; }
+      .columns { flex-direction: column; gap: 14px; }
+      .column { width: 100%; }
+      .callout { padding: 12px; }
+      .topbar { padding-inline: 8px; }
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="hero">
-      <section class="panel intro">
-        <div class="eyebrow"><span class="pulse"></span><span id="weekLabel">Weekly Planning</span></div>
-        <h1>Weekly Command Center</h1>
-        <p class="subtitle">A cleaner cockpit for your week: daily tasks, team check-ins, booth shifts, ABCDE time blocks, and weekly review — built to feel good on both phone and laptop.</p>
-      </section>
-      <aside class="panel quick-actions">
-        <div class="today-card">
-          <div>
-            <small>Today</small>
-            <h2 id="todayTitle">Sunday</h2>
-            <p id="todaySummary">Keep it simple. Clear today's task list first.</p>
-          </div>
-        </div>
-        <div class="action-row">
-          <button class="btn primary" id="quickAddBtn">＋ Quick add</button>
-          <button class="btn" id="exportBtn">Export</button>
-          <button class="btn" id="importBtn">Import</button>
-          <button class="btn ghost" id="resetBtn">Reset demo</button>
-        </div>
-      </aside>
-    </header>
-
-    <section class="panel notion-mirror" aria-labelledby="notionMirrorTitle">
-      <div class="notion-mirror-head">
-        <div>
-          <div class="section-title">Notion mirror <span id="notionWeekDates">Current week</span></div>
-          <h2 id="notionMirrorTitle">Weekly Dashboard</h2>
-          <p id="notionMotto">Your goals and daily checklists, mirrored from Notion.</p>
-        </div>
-        <div class="sync-pill" id="notionSyncStatus">Synced from Notion</div>
-      </div>
-      <ol class="notion-goals" id="notionGoals"></ol>
-      <div class="notion-week-grid" id="notionWeekGrid"></div>
-      <div class="notion-source" id="notionSource"></div>
-    </section>
-
-    <div class="layout">
-      <aside class="panel sidebar">
-        <div class="section-title">Days <span>SGT</span></div>
-        <nav class="day-tabs" id="dayTabs"></nav>
-      </aside>
-
-      <main class="main">
-        <section class="panel day-board">
-          <div class="day-header">
-            <div>
-              <h2 id="activeDayTitle">Monday</h2>
-              <p id="activeDaySub">Pick a day to plan. Edits save locally in this browser.</p>
-            </div>
-          </div>
-          <div class="theme-card">
-            <span>Day theme</span>
-            <input id="dayThemeInput" aria-label="Day theme" />
-          </div>
-          <div class="columns">
-            <section class="lane" data-lane="calendar">
-              <h3>Calendar <span class="count" id="calendarCount">0</span></h3>
-              <div class="task-list" id="calendarList"></div>
-              <form class="add-form" data-add="calendar">
-                <textarea rows="2" placeholder=""></textarea>
-                <select>
-                  <option value="C">C wealth building</option><option value="B">B active income</option><option value="A">A misc</option><option value="D">D self growth</option><option value="E">E time waster</option>
-                </select>
-                <button class="btn" type="submit">Add</button>
-              </form>
-            </section>
-            <section class="lane" data-lane="must">
-              <h3>Must-do <span class="count" id="mustCount">0</span></h3>
-              <div class="task-list" id="mustList"></div>
-              <form class="add-form" data-add="must">
-                <textarea rows="2" placeholder=""></textarea>
-                <select>
-                  <option value="C">C wealth building</option><option value="B">B active income</option><option value="D">D self growth</option><option value="A">A misc</option><option value="E">E time waster</option>
-                </select>
-                <button class="btn" type="submit">Add</button>
-              </form>
-            </section>
-            <section class="lane" data-lane="ifTime">
-              <h3>If got time <span class="count" id="ifTimeCount">0</span></h3>
-              <div class="task-list" id="ifTimeList"></div>
-              <form class="add-form" data-add="ifTime">
-                <textarea rows="2" placeholder=""></textarea>
-                <select>
-                  <option value="D">D self growth</option><option value="C">C wealth building</option><option value="A">A misc</option><option value="B">B active income</option><option value="E">E time waster</option>
-                </select>
-                <button class="btn" type="submit">Add</button>
-              </form>
-            </section>
-            <section class="lane" data-lane="salesSystem">
-              <h3>Sales System <span class="count" id="salesSystemCount">0</span></h3>
-              <div class="task-list" id="salesSystemList"></div>
-              <form class="add-form" data-add="salesSystem">
-                <textarea rows="2" placeholder=""></textarea>
-                <select>
-                  <option value="B">B active income</option><option value="C">C wealth building</option><option value="D">D self growth</option><option value="A">A misc</option><option value="E">E time waster</option>
-                </select>
-                <button class="btn" type="submit">Add</button>
-              </form>
-            </section>
-            <section class="lane" data-lane="healthSystem">
-              <h3>Health System <span class="count" id="healthSystemCount">0</span></h3>
-              <div class="task-list" id="healthSystemList"></div>
-              <div class="system-note-stack">
-                <div class="system-field">
-                  <label>Workout log</label>
-                  <textarea id="workoutLog" data-system-note="workoutLog" placeholder="Log today's workout!"></textarea>
-                </div>
-              </div>
-              <form class="add-form" data-add="healthSystem">
-                <textarea rows="2" placeholder=""></textarea>
-                <select>
-                  <option value="D">D self growth</option><option value="A">A misc</option><option value="C">C wealth building</option><option value="B">B active income</option><option value="E">E time waster</option>
-                </select>
-                <button class="btn" type="submit">Add</button>
-              </form>
-            </section>
-            <section class="lane" data-lane="personalGrowthSystem">
-              <h3>Personal Growth System <span class="count" id="personalGrowthSystemCount">0</span></h3>
-              <div class="task-list" id="personalGrowthSystemList"></div>
-              <div class="system-note-stack">
-                <div class="system-field">
-                  <label>What I learnt today so far</label>
-                  <textarea id="learningToday" data-system-note="learningToday"></textarea>
-                </div>
-              </div>
-              <form class="add-form" data-add="personalGrowthSystem">
-                <textarea rows="2" placeholder=""></textarea>
-                <select>
-                  <option value="D">D self growth</option><option value="C">C wealth building</option><option value="A">A misc</option><option value="B">B active income</option><option value="E">E time waster</option>
-                </select>
-                <button class="btn" type="submit">Add</button>
-              </form>
-            </section>
-          </div>
-        </section>
-
-        <section class="panel bottom">
-          <div class="section-title">Team focus <span>Booth + coaching</span></div>
-          <div class="team-grid" id="teamGrid"></div>
-        </section>
-
-        <details class="panel bottom dropdown-panel">
-          <summary>ABCDE snapshot</summary>
-          <div class="dropdown-content">
-            <div class="metrics-grid" id="metricsGrid"></div>
-          </div>
-        </details>
-
-        <details class="panel bottom dropdown-panel">
-          <summary>Weekly review</summary>
-          <div class="dropdown-content">
-            <div class="note-card">
-              <h3>What have I learnt this week?</h3>
-              <p>Simple reflections. This is the part that can sync back into Notion later.</p>
-              <textarea id="weeklyLearning"></textarea>
-            </div>
-            <div class="note-card">
-              <h3>Team concerns / FAQ</h3>
-              <p>Use this to collect the concerns/challenges from your team before reviews.</p>
-              <textarea id="teamFaq"></textarea>
-            </div>
-          </div>
-        </details>
-      </main>
-    </div>
-  </div>
-
-  <dialog id="dataDialog">
-    <div class="dialog-body">
-      <h2 id="dialogTitle">Export plan</h2>
-      <p id="dialogHint">Copy this JSON to move your plan between devices for now.</p>
-      <textarea class="json-box" id="jsonBox"></textarea>
-      <div class="dialog-actions">
-        <button class="btn ghost" id="closeDialog">Close</button>
-        <button class="btn primary" id="applyImport" hidden>Import data</button>
-      </div>
-    </div>
-  </dialog>
-
-  <div class="toast" id="toast">Saved</div>
-
+  <header class="topbar">
+    <div class="crumb" id="crumb">Weekly Dashboard</div>
+    <a class="notion-link" id="notionLink" href="#" target="_blank" rel="noopener">Open in Notion ↗</a>
+  </header>
+  <div class="cover" id="cover" hidden><img id="coverImage" alt="" /></div>
+  <main class="page">
+    <h1 class="page-title" id="pageTitle">Weekly Dashboard</h1>
+    <div class="page-meta" id="pageMeta"></div>
+    <div id="blocks"></div>
+    <div class="synced" id="synced"></div>
+  </main>
   <script>
-    const STORAGE_KEY = 'keson-weekly-command-center-v2';
-    const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-    const lanes = ['calendar','must','ifTime','salesSystem','healthSystem','personalGrowthSystem'];
-    const abc = {
-      A: {label: 'A Misc', color: 'Grey', detail: 'travel, sleep, eating, errands'},
-      B: {label: 'B Active Income', color: 'Sage', detail: 'booth / shifts / direct sales'},
-      C: {label: 'C Wealth Building', color: 'Banana', detail: 'learners, systems, team, content'},
-      D: {label: 'D Self Growth', color: 'Pistachio', detail: 'gym, reading, courses, health'},
-      E: {label: 'E Time Waster', color: 'Grey', detail: 'scrolling / low-value distraction'}
-    };
+    const notionPage = {"title": "Sep Week 2 Weekly Dashboard", "url": "https://app.notion.com/p/Sep-Week-2-Weekly-Dashboard-3d60463572168077b41ef11c98c2796c", "cover": "assets/notion-cover.png", "date": {"start": "2026-09-07", "end": "2026-09-13"}, "blocks": [{"id": "7f104635-7216-834e-a8f4-814acb84ac02", "type": "quote", "rich": [{"text": "Once you articulate an agenda, you have to follow it.  - Brian Mulroney ", "href": null, "annotations": {"bold": false, "italic": true, "strikethrough": false, "underline": false, "code": false, "color": "green"}}], "color": "default"}, {"id": "1ce04635-7216-825b-9b05-815ffb5d018b", "type": "image", "rich": [], "src": "assets/notion-image-1ce046357216825b9b05815ffb5d018b.png", "caption": ""}, {"id": "2fa04635-7216-83e8-b532-81bc7c909b02", "type": "column_list", "rich": [], "children": [{"id": "d9604635-7216-8328-9eb4-81e7bb91bae1", "type": "column", "rich": [], "children": [{"id": "35104635-7216-8391-a875-81606c01d3a2", "type": "callout", "rich": [{"text": "Top 3 Goals for the Week:", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "orange_background", "icon": "🎯", "children": [{"id": "80c04635-7216-83c5-9bbf-811400809d59", "type": "paragraph", "rich": [{"text": "Don't be the same, be better.", "href": null, "annotations": {"bold": false, "italic": true, "strikethrough": false, "underline": false, "code": false, "color": "green"}}], "color": "default"}, {"id": "8c204635-7216-8200-8bdc-8139ad3b271c", "type": "to_do", "rich": [{"text": "focus on personal sales, get leads, build momentum", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "78d04635-7216-8284-900b-810cd1d5448c", "type": "to_do", "rich": [{"text": "help bernice see breakthrough", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "c0804635-7216-8349-b622-0103a4ce74be", "type": "to_do", "rich": [], "color": "default", "checked": false}]}, {"id": "6dd04635-7216-821f-9db6-81adfbd66c66", "type": "divider", "rich": []}, {"id": "bff04635-7216-82e8-a5af-819fc798234f", "type": "toggle", "rich": [{"text": "Quick links", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "children": [{"id": "28604635-7216-8324-bda6-814fda7ba6fc", "type": "child_page", "rich": [], "title": "Habit Tracker", "url": "https://www.notion.so/2860463572168324bda6814fda7ba6fc", "children": [{"id": "2f004635-7216-821b-bf1a-8199e6ed80ee", "type": "paragraph", "rich": [], "color": "default"}, {"id": "4bd04635-7216-83ec-a600-81da0f6e5f57", "type": "child_database", "rich": [], "title": "Habits. (1)", "url": "https://www.notion.so/4bd04635721683eca60081da0f6e5f57"}]}, {"id": "46a04635-7216-82e3-8902-81bc8fcec5f9", "type": "embed", "rich": [], "url": "https://indify.co/widgets/live/progressBar/lCF7FXFz0E9KRIAK9u5S"}, {"id": "0ee04635-7216-8245-8cd5-01e11cf57bd6", "type": "paragraph", "rich": [], "color": "default"}]}, {"id": "78304635-7216-8232-8bb5-013c13b1c424", "type": "divider", "rich": []}, {"id": "90004635-7216-82d3-aad1-8176c3e49573", "type": "paragraph", "rich": [], "color": "default"}]}, {"id": "7fa04635-7216-832f-9a0c-816afa02c6d1", "type": "column", "rich": [], "children": [{"id": "47904635-7216-8370-8eb2-811ba17ac299", "type": "callout", "rich": [{"text": "Monday", "href": null, "annotations": {"bold": true, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}, {"text": " ", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default_background", "icon": "🚀", "children": [{"id": "22a04635-7216-831e-91dc-010835f79608", "type": "unsupported", "rich": []}, {"id": "f3d04635-7216-83cf-913f-01aa6221a32b", "type": "to_do", "rich": [{"text": "mm", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": true}, {"id": "ab304635-7216-82b4-8df4-810d7abdf6f3", "type": "to_do", "rich": [{"text": "team lead meeting", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": true}, {"id": "c5304635-7216-820c-bbfc-81865ba85f1b", "type": "to_do", "rich": [], "color": "default", "checked": false}]}, {"id": "bae04635-7216-833a-9453-01ec2cfe3990", "type": "callout", "rich": [{"text": "Thursday", "href": null, "annotations": {"bold": true, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default_background", "icon": "🤑", "children": [{"id": "53204635-7216-8395-934c-01e82451d765", "type": "unsupported", "rich": []}, {"id": "88104635-7216-82ad-96ca-01b350928f75", "type": "to_do", "rich": [{"text": "bring chewing gum", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "8c404635-7216-8391-8316-015de31b8226", "type": "to_do", "rich": [{"text": "bring rene clothes", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "27d04635-7216-8201-ab39-0146c575dac7", "type": "to_do", "rich": [{"text": "bring the medical stuff for rene", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "3d604635-7216-80e5-8b85-d75ebf5afd70", "type": "to_do", "rich": [{"text": "jerome coffee session 11am", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "3d604635-7216-8041-96c3-d217956866a3", "type": "to_do", "rich": [{"text": "maybe bridge bernice to shaufin support at booth", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}]}, {"id": "3d604635-7216-8055-b900-f88249372c71", "type": "paragraph", "rich": [], "color": "default"}, {"id": "3d604635-7216-8070-a19a-f3376a8190b5", "type": "paragraph", "rich": [], "color": "default"}]}, {"id": "77104635-7216-83d2-b5ec-01d12f379ae6", "type": "column", "rich": [], "children": [{"id": "16004635-7216-83da-b9c8-81d51d75b341", "type": "callout", "rich": [{"text": "Tuesday", "href": null, "annotations": {"bold": true, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default_background", "icon": "📕", "children": [{"id": "edb04635-7216-8221-9d28-818a75f81f46", "type": "unsupported", "rich": []}, {"id": "4b004635-7216-82a1-ba48-012a0bbd6c15", "type": "to_do", "rich": [{"text": "morning class decision analysis", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": true}, {"id": "64304635-7216-82d3-ae1b-818ac497411c", "type": "to_do", "rich": [{"text": "go home take stuff", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": true}, {"id": "d2304635-7216-8201-88b7-818c1757ee48", "type": "to_do", "rich": [{"text": "support bernice", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": true}]}, {"id": "e3904635-7216-83b9-ab03-012e6580cedf", "type": "callout", "rich": [{"text": "Friday ", "href": null, "annotations": {"bold": true, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default_background", "icon": "💰", "children": [{"id": "7bc04635-7216-825f-9e95-8116a9ffac0a", "type": "unsupported", "rich": []}, {"id": "c0104635-7216-839c-b649-011e5e61701a", "type": "to_do", "rich": [], "color": "default", "checked": false}, {"id": "ae204635-7216-83e9-9571-019d9223cb65", "type": "to_do", "rich": [], "color": "default", "checked": false}, {"id": "c4904635-7216-82a9-a699-0144ecda0e46", "type": "to_do", "rich": [], "color": "default", "checked": false}]}, {"id": "11004635-7216-834b-82b6-0110778ec75f", "type": "paragraph", "rich": [], "color": "default"}]}, {"id": "d8404635-7216-8216-8a89-81b80f57abe6", "type": "column", "rich": [], "children": [{"id": "37604635-7216-835d-84a7-81688ece35e5", "type": "callout", "rich": [{"text": "Wednesday", "href": null, "annotations": {"bold": true, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}, {"text": " ", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default_background", "icon": "📝", "children": [{"id": "b4904635-7216-8248-ae28-818d4431a3ac", "type": "unsupported", "rich": []}, {"id": "33a04635-7216-83b7-9727-814aa3eceddd", "type": "to_do", "rich": [{"text": "morning class", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": true}, {"id": "3d604635-7216-806c-aad1-edf082e18eec", "type": "to_do", "rich": [{"text": "lunch", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "72104635-7216-83f9-95c5-81d49313d106", "type": "to_do", "rich": [{"text": "aftn class", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "3d604635-7216-80db-82ef-eb1a4cfda3cb", "type": "to_do", "rich": [{"text": "make sure clemen check in and hold bernice accountable ", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "3d604635-7216-80ac-9937-de649800763a", "type": "to_do", "rich": [{"text": "followup the accountability for shaufin and xinru", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "bb104635-7216-832c-8740-017c6370ebb8", "type": "to_do", "rich": [{"text": "probably go to epm", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "3d604635-7216-8091-a1be-fb6645551ff6", "type": "to_do", "rich": [{"text": "night booth at tamp hub", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "3d604635-7216-8056-a070-d4dc7054772d", "type": "to_do", "rich": [{"text": "gym at night a while", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}, {"id": "3d604635-7216-8021-9d74-c258a242d634", "type": "to_do", "rich": [{"text": "compile the claims for the finance - haidilao, subway?", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default", "checked": false}]}, {"id": "ccc04635-7216-8309-b6e1-81c577d48c19", "type": "callout", "rich": [{"text": "Saturday", "href": null, "annotations": {"bold": true, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default_background", "icon": "🏆", "children": [{"id": "3ec04635-7216-82a2-900d-810f0f1ddc2a", "type": "unsupported", "rich": []}, {"id": "93504635-7216-82a7-9785-81b121a39716", "type": "to_do", "rich": [], "color": "default", "checked": false}, {"id": "60104635-7216-83c5-937d-0104a7d2b2dd", "type": "to_do", "rich": [], "color": "default", "checked": false}, {"id": "33804635-7216-821f-9c82-011fc2a0f6b9", "type": "to_do", "rich": [], "color": "default", "checked": false}]}, {"id": "2a904635-7216-8333-8654-01dcc0c7c434", "type": "callout", "rich": [{"text": "Sunday", "href": null, "annotations": {"bold": true, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default_background", "icon": "👑", "children": [{"id": "b7804635-7216-83ad-a87e-8141adc59f66", "type": "unsupported", "rich": []}, {"id": "93004635-7216-8384-9fa3-01c7007d3c5f", "type": "to_do", "rich": [], "color": "default", "checked": false}, {"id": "30f04635-7216-82f0-b779-012a35520739", "type": "to_do", "rich": [], "color": "default", "checked": false}, {"id": "63604635-7216-8359-8512-815c31d9a9f5", "type": "to_do", "rich": [], "color": "default", "checked": false}]}]}]}, {"id": "16304635-7216-8355-a37a-812353d10080", "type": "column_list", "rich": [], "children": [{"id": "c5b04635-7216-83af-ba2e-01226029fe01", "type": "column", "rich": [], "children": [{"id": "a4604635-7216-8363-9838-813c24dcfc7a", "type": "paragraph", "rich": [], "color": "default"}]}, {"id": "b7004635-7216-826d-8a23-0181eaf7d6a6", "type": "column", "rich": [], "children": [{"id": "1fa04635-7216-82ae-b7ab-010e2e8e1b72", "type": "column_list", "rich": [], "children": [{"id": "e1a04635-7216-8398-b4dc-8180cceb2311", "type": "column", "rich": [], "children": [{"id": "ab304635-7216-8233-90c6-01548d7e50ee", "type": "paragraph", "rich": [], "color": "default"}, {"id": "9bf04635-7216-826d-8a33-81450c4df227", "type": "paragraph", "rich": [], "color": "default"}]}, {"id": "e1004635-7216-8272-98b7-0114a56b8870", "type": "column", "rich": [], "children": [{"id": "bef04635-7216-82a9-be09-016205517865", "type": "paragraph", "rich": [], "color": "default"}]}]}, {"id": "1f404635-7216-838e-9406-01597f2d21e3", "type": "paragraph", "rich": [], "color": "default"}]}]}, {"id": "a1504635-7216-82c1-a186-01aeadb56f64", "type": "paragraph", "rich": [], "color": "default"}, {"id": "3d604635-7216-81a4-a454-f43c91151d18", "type": "heading_3", "rich": [{"text": "Workout update — Wednesday 09/09/2026", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d604635-7216-8118-8480-f13a30f6fa0b", "type": "bulleted_list_item", "rich": [{"text": "Heavy upper-body pull + push session. Barbell rows: 60kg × 6 × 1; 80kg × 6 × 4 (2,280kg total row volume).", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d604635-7216-8158-bed9-fee99c75c882", "type": "bulleted_list_item", "rich": [{"text": "Rows supersetted with seated machine shoulder press: 35kg × 6–8 reps per set.", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d604635-7216-8160-a62b-e80b0a246d83", "type": "bulleted_list_item", "rich": [{"text": "Circuit: 6 pull-ups; curls 15kg × 6/side then 10kg × 6–8/side to failure; 10–12 dips; tricep pulldown 25kg × 6–8 then 15kg × 10 to failure.", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d604635-7216-819d-a99e-c5f64d76b0be", "type": "bulleted_list_item", "rich": [{"text": "Read: intense strength/hypertrophy session with substantial back, shoulder and arm fatigue. Recover well; avoid repeating upper-body failure work tomorrow.", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d604635-7216-81c4-b918-e88172f754b3", "type": "heading_3", "rich": [{"text": "Daily fitness summary — Wednesday 09/09/2026", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d604635-7216-812d-84f0-d68fd99de028", "type": "bulleted_list_item", "rich": [{"text": "WHOOP: 15,819 steps; 1,708 kcal displayed; HRV 86; resting HR 50; VO₂ max 49.", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d604635-7216-81ba-9620-e4feae34f8f2", "type": "bulleted_list_item", "rich": [{"text": "Nutrition estimate: 1,580–2,115 kcal; 229–293g protein; 57–101g carbs; 37–74g fat.", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d604635-7216-8107-a339-e55621d3cf9a", "type": "bulleted_list_item", "rich": [{"text": "Estimated true total burn: ~2,400–2,850 kcal after 15.8k steps and intense upper-body lifting; likely deficit ~285–1,270 kcal (midpoint ~780 kcal).", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d604635-7216-8177-9dbe-f05280f11974", "type": "bulleted_list_item", "rich": [{"text": "Read: high-output lean day, but recovery demand is high; prioritise carbohydrates, fluids and sleep.", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d704635-7216-8138-ab1e-d268abde78b9", "type": "heading_3", "rich": [{"text": "Workout update — Thursday 10/09/2026", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d704635-7216-817f-8b74-c1eb1e93a4a3", "type": "bulleted_list_item", "rich": [{"text": "Incline walks: two sessions, 430 kcal tracked total.", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d704635-7216-8151-a6e2-e27c1fdff4e7", "type": "bulleted_list_item", "rich": [{"text": "Smith-machine bench press: 60kg × 5, 80kg × 3 × 4, 60kg × 5 (1,560kg total load volume).", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d704635-7216-8125-b79c-d1958830c94d", "type": "bulleted_list_item", "rich": [{"text": "Machine chest fly: 30kg × 6 × 2 (360kg load volume). Pull-ups: 5 × 5 = 25 reps.", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d704635-7216-81f4-af08-fa7df8f276eb", "type": "bulleted_list_item", "rich": [{"text": "Read: chest-strength emphasis with useful pulling balance; cardio volume was substantial. Allow chest and shoulders to recover before another hard push session.", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d704635-7216-810c-9de5-fd0060b4d747", "type": "heading_3", "rich": [{"text": "Daily fitness summary — Thursday 10/09/2026", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d704635-7216-8159-994e-c1ba4b4466ed", "type": "bulleted_list_item", "rich": [{"text": "Estimated intake: ~2,100 kcal; protein ~230g; carbs ~115g; fat ~80g.", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d704635-7216-810e-8ad5-fc8539e9562c", "type": "bulleted_list_item", "rich": [{"text": "Food: chicken breast + drumlet, mixed vegetables/cai fan sides, salmon + chicken breast, two slices 9-grain bread + 1/2 tbsp peanut butter, 1 scoop casein, and supper of 3/4 scoop casein + 3 scoops Greek yogurt and spices.", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}, {"id": "3d704635-7216-8149-bb6a-f3cb26d1b9ce", "type": "bulleted_list_item", "rich": [{"text": "Estimated workout burn: ~650 kcal (430 kcal tracked incline walking + resistance training estimate). Steps: 23,802. Estimated total burn ~2,800 kcal after avoiding double-counting incline-walk steps; estimated deficit ~700 kcal.", "href": null, "annotations": {"bold": false, "italic": false, "strikethrough": false, "underline": false, "code": false, "color": "default"}}], "color": "default"}], "syncedAt": "2026-09-11T00:43:24.451324+08:00"};
 
-    function singaporeNow() {
-      return new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Singapore'}));
-    }
+    const escapeHtml = (value='') => String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
-    function todayDayName() {
-      return singaporeNow().toLocaleDateString('en-SG', {weekday:'long'});
-    }
-
-    function currentWeekLabel() {
-      const now = singaporeNow();
-      const dayIndex = (now.getDay() + 6) % 7; // Monday = 0
-      const mon = new Date(now); mon.setDate(now.getDate() - dayIndex);
-      const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
-      const sameMonth = mon.getMonth() === sun.getMonth();
-      const monLabel = sameMonth ? String(mon.getDate()) : mon.toLocaleDateString('en-SG', {day:'numeric', month:'short'});
-      const sunLabel = sun.toLocaleDateString('en-SG', {day:'numeric', month:'short'});
-      return `${monLabel}–${sunLabel}`;
-    }
-
-    const defaultSystemNotes = () => ({
-      workoutLog: '',
-      learningToday: ''
-    });
-
-    const nightlyCalendarSync = {"week": "7–13 Sep", "days": {"Monday": [["Manager Monday (Meetings & Build Momentum for Team)", "C"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["2pm–8pm — K Suseila TCB", "C"], ["5pm–6pm — Entrepreneur Meeting", "C"], ["6pm–6:30pm — Leslie Weekly Review", "C"], ["7pm–10pm — Momentum Monday 🤗", "C"]], "Tuesday": [["Tuesday (Review for Team)", "C"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["8:15am–11:30am — Decision Analysis OPIM101", "D"], ["9am–2pm — Bernice Booth", "B"], ["9am–6pm — Mariappan ABC", "C"], ["9am–6pm — syin TTP", "C"], ["2pm–7pm — Bernice Booth", "B"], ["3pm–5:30pm — Time Block for Weekly Reviews", "C"]], "Wednesday": [["Wednesday (Ensure team on track for rising star)", "C"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["8:15am–11:30am — Management of People at Work OBHR101", "D"], ["9am–2pm — Bernice Booth", "B"], ["9am–6pm — Sim Mong Chwee MPC", "C"], ["12pm–3:15pm — Psy of Reasoning & Thinking PSYC204", "D"], ["2pm–7pm — Bernice Booth", "B"]], "Thursday": [["Thursday (Focus on self + school work)", "D"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["9am–2pm — Bernice Booth", "B"], ["2pm–7pm — Bernice Booth", "B"], ["2pm–7pm — Tong Cheng Booth", "B"], ["8:30pm–8:40pm — Voice call with Prof Ong — COMM254 application", "C"]], "Friday": [["Focused Friday (Lock in for personal sales)", "C"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["8am–2pm — NG SIEW SIEW TTP", "C"], ["9am–2pm — Bernice Booth", "B"], ["2pm–7pm — Bernice Booth", "B"]], "Saturday": [["Saturday (Focus on team/personal)", "C"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["8am–2pm — Thilagavathy TCB", "C"], ["9am–2pm — Bernice Booth", "B"], ["9am–6pm — Thida Oo tiktok ai & communication", "C"], ["2pm–7pm — Bernice Booth", "B"]], "Sunday": [["Sunday (Focus on Reflection + Planning)", "C"], ["Sunday Clean up (Media, Fireflies, Declutter)", "C"], ["12:30am–1am — Journal + Track Habits, Reset & Energize (Zeigarnik Effect)", "C"], ["9am–2pm — Bernice Booth", "B"], ["9am–2pm — Tong Cheng Booth", "B"], ["2pm–7pm — Bernice Booth", "B"], ["10pm–10:30pm — Weekly Review for Carynn", "C"]]}};
-
-    const nightlyNotionSync = {"title": "Sep Week 2 Weekly Dashboard", "start": "2026-09-07", "end": "2026-09-13", "motto": "Don't be the same, be better.", "goals": ["focus on personal sales, get leads, build momentum", "help bernice see breakthrough"], "days": {"Monday": [{"text": "mm", "done": true}, {"text": "team lead meeting", "done": true}], "Tuesday": [{"text": "morning class decision analysis", "done": true}, {"text": "go home take stuff", "done": true}, {"text": "support bernice", "done": true}], "Wednesday": [{"text": "morning class", "done": true}, {"text": "lunch", "done": false}, {"text": "aftn class", "done": false}, {"text": "make sure clemen check in and hold bernice accountable", "done": false}, {"text": "followup the accountability for shaufin and xinru", "done": false}, {"text": "probably go to epm", "done": false}, {"text": "night booth at tamp hub", "done": false}, {"text": "gym at night a while", "done": false}, {"text": "compile the claims for the finance - haidilao, subway?", "done": false}], "Thursday": [{"text": "bring chewing gum", "done": false}, {"text": "bring rene clothes", "done": false}, {"text": "bring the medical stuff for rene", "done": false}, {"text": "jerome coffee session 11am", "done": false}, {"text": "maybe bridge bernice to shaufin support at booth", "done": false}], "Friday": [], "Saturday": [], "Sunday": []}, "url": "https://app.notion.com/p/Sep-Week-2-Weekly-Dashboard-3d60463572168077b41ef11c98c2796c", "syncedAt": "2026-09-11T00:33:20.820320+08:00"};
-
-    const seed = {
-      week: currentWeekLabel(),
-      activeDay: todayDayName(),
-      notes: {
-        weeklyLearning: 'Focus on the why behind the target, not just the target.\nThe workday starts the night before — plan tomorrow before tomorrow starts.',
-        teamFaq: 'Prepare concerns and challenges faced while handling team members.\nCreate FAQ and discuss together next meet.'
-      },
-      team: [
-        {name:'Carynn', cls:'carynn', currentStatus:'Weekly planning, keep momentum clean, check in after shift.', whatHappenedToday:''},
-        {name:'Leslie', cls:'leslie', currentStatus:'Identity + state. Check takeaways, get him to text you.', whatHappenedToday:''},
-        {name:'Xinru', cls:'xinru', currentStatus:'Bridge to someone, support booth, watch school-hour constraints.', whatHappenedToday:''},
-        {name:'TC', cls:'tc', currentStatus:'Team lead recording / Fireflies setup. Get takeaways.', whatHappenedToday:''}
-      ],
-      days: {
-        Monday: {
-          theme: 'Manager Monday (Meetings & Build Momentum)',
-          calendar: [task('7:30am–9am — ran', 'D'), task('9am–9:30am — cooked', 'A'), task('9:40am onwards — eating', 'A'), task('10:20am–11:30am — declutter', 'A'), task('11:40am–12pm — get ready + shower', 'A'), task('Manager Monday (Meetings & Build Momentum)', 'C'), task('National Day observance', 'A'), task('Carynn Booth Shift (Morning)', 'B'), task('Leslie Booth Shift (Morning)', 'B'), task('Xinru Booth Shift (Morning)', 'B'), task('Meetings + Momentum Monday', 'C'), task('Xinru Booth Shift (Afternoon)', 'B'), task('Entrepreneur Meeting', 'C'), task('Leslie Weekly Review', 'C')],
-          fixed: [task('7:30am–9am — ran', 'D'), task('9am–9:30am — cooked', 'A'), task('9:40am onwards — eating', 'A'), task('10:20am–11:30am — declutter', 'A'), task('11:40am–12pm — get ready + shower', 'A'), task('Entrepreneur Meeting', 'C'), task('Momentum Monday', 'C')],
-          must: [task('prepare for mm — notion hacks', 'C'), task('weekly planning for carynn', 'C'), task('bridge xinru to someone', 'C'), task('check in on leslie and tongcheng on their takeaways, get them to text me', 'C')],
-          ifTime: [task('edit booth ic ipa', 'C')],
-          salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')],
-          healthSystem: [task('Workout Today', 'D')],
-          personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')],
-          systemNotes: {
-            workoutLog: '7:30am–9am — ran',
-            learningToday: ''
-          }
-        },
-        Tuesday: { theme: '', calendar: [], fixed: [], must: [task('review team progress', 'C')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
-        Wednesday: { theme: '', calendar: [task('9am–2pm — Admiralty booth (Morning)', 'B'), doneTask('go gym right before GSPA', 'D'), task('3:30pm — going GSPA', 'A'), task('5pm — GSPA (Diamonds)', 'C'), task('Xinru Booth Shift (Afternoon) — need leave early for class', 'B')], fixed: [task('GSPA (Diamonds)', 'C')], must: [task('launch something for My dm ads', 'C'), doneTask('go booth and do some proper outreach, get leads to be on track', 'B'), task('do some booth before GSPA, dw waste time on admin before', 'B'), task('GSPA — followup properly', 'B'), task('GSPA — redo labels', 'C'), task('GSPA — export the WhatsApp', 'C'), doneTask('GSPA — read', 'D'), task('GSPA — reflect DAR', 'D'), doneTask('GSPA — bond, chill in pool and relax', 'D'), task('GSPA — build AI stuff, prompt it asking what else can I do', 'C')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D'), doneTask('go gym right before GSPA', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
-        Thursday: { theme: '', calendar: [task('10:30am — KAH meeting', 'C')], fixed: [task('10:30am — KAH meeting', 'C')], must: [task('support team booths if free', 'C')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
-        Friday: { theme: '', calendar: [task('10am–1pm — Admiralty booth (Morning)', 'B'), task('1pm — leave for Clementi aftn shift IC', 'A')], fixed: [], must: [task('follow ups + team check-ins', 'B')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
-        Saturday: { theme: '', calendar: [task('8am — leave house for Admiralty', 'A'), task('10am–1pm — Admiralty booth (Morning)', 'B'), task('aftn — settle the WhatsApp thing', 'C'), task('7pm — Enspire Orientation', 'C')], fixed: [task('7pm — Enspire Orientation', 'C')], must: [task('MUST ENROL THE RASHIDDD', 'B'), task('settle the WhatsApp thing', 'C'), task('church stuff may affect booth timing', 'A')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() },
-        Sunday: { theme: '', calendar: [task('10pm — Weekly Review for Carynn', 'C')], fixed: [task('10pm — Weekly Review for Carynn', 'C')], must: [task('plan next week', 'C'), task('charge whoop tonight 11pm', 'D')], ifTime: [], salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')], healthSystem: [task('Workout Today', 'D')], personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')], systemNotes: defaultSystemNotes() }
-      }
-    };
-
-    function task(text, code='C') {
-      return { id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()), text, code, done: false };
-    }
-
-    function doneTask(text, code='C') {
-      return { id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()), text, code, done: true };
-    }
-
-    function applyNightlyCalendarSync(next) {
-      if (!nightlyCalendarSync || next.week !== nightlyCalendarSync.week) return next;
-      days.forEach(day => {
-        const entries = nightlyCalendarSync.days?.[day];
-        if (!Array.isArray(entries)) return;
-        next.days[day] ||= blankDay();
-        next.days[day].calendar = entries.map(([text, code]) => task(text, code || 'C'));
-      });
-      return next;
-    }
-
-    function blankDay() {
-      return {
-        theme: '', calendar: [], fixed: [], must: [], ifTime: [],
-        salesSystem: [task('10 Follow-ups per hour', 'B'), task('__ hot followups done __ cold followups done', 'B')],
-        healthSystem: [task('Workout Today', 'D')],
-        personalGrowthSystem: [task('learn something today and reflect/write about it', 'D')],
-        systemNotes: defaultSystemNotes()
-      };
-    }
-
-    function freshCurrentWeek(previous={}) {
-      const next = structuredClone(seed);
-      next.week = currentWeekLabel();
-      next.activeDay = todayDayName();
-      next.notes = previous.notes || structuredClone(seed.notes);
-      next.team = previous.team || structuredClone(seed.team);
-      next.days = Object.fromEntries(days.map(day => [day, blankDay()]));
-      applyNightlyCalendarSync(next);
-      return next;
-    }
-
-    let state = loadState();
-
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? migrateState(JSON.parse(raw)) : freshCurrentWeek();
-      } catch { return freshCurrentWeek(); }
-    }
-
-    function migrateState(next) {
-      const thisWeek = currentWeekLabel();
-      const today = todayDayName();
-      if (next.week !== thisWeek) return freshCurrentWeek(next);
-      next.week = thisWeek;
-      next.activeDay = today;
-      next.notes ||= structuredClone(seed.notes);
-      next.team ||= structuredClone(seed.team);
-      next.team.forEach((member, index) => {
-        const fallback = seed.team[index] || {};
-        if (!('currentStatus' in member)) member.currentStatus = member.focus || fallback.currentStatus || '';
-        if (!('whatHappenedToday' in member)) member.whatHappenedToday = '';
-      });
-      next.days ||= {};
-      days.forEach(day => {
-        next.days[day] ||= structuredClone(seed.days[day]);
-        if (!('theme' in next.days[day])) next.days[day].theme = seed.days[day].theme || '';
-        next.days[day].systemNotes ||= defaultSystemNotes();
-        lanes.forEach(lane => {
-          if (!Array.isArray(next.days[day][lane])) next.days[day][lane] = structuredClone(seed.days[day][lane] || []);
-        });
-      });
-      applyNightlyCalendarSync(next);
-      if (next.week === '10–16 Aug') {
-        ensureCalendarItem(next, 'Wednesday', '9am–2pm — Admiralty booth (Morning)', 'B');
-        ensureCalendarItem(next, 'Wednesday', '3:30pm — going GSPA', 'A');
-        ensureCalendarItem(next, 'Wednesday', '5pm — GSPA (Diamonds)', 'C');
-        ensureLaneItem(next, 'Wednesday', 'calendar', 'go gym right before GSPA', 'D');
-        ensureLaneItem(next, 'Wednesday', 'must', 'launch something for My dm ads', 'C');
-        ensureLaneItem(next, 'Wednesday', 'must', 'go booth and do some proper outreach, get leads to be on track', 'B');
-        ensureLaneItem(next, 'Wednesday', 'must', 'do some booth before GSPA, dw waste time on admin before', 'B');
-        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — followup properly', 'B');
-        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — redo labels', 'C');
-        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — export the WhatsApp', 'C');
-        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — read', 'D');
-        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — reflect DAR', 'D');
-        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — bond, chill in pool and relax', 'D');
-        ensureLaneItem(next, 'Wednesday', 'must', 'GSPA — build AI stuff, prompt it asking what else can I do', 'C');
-        ensureLaneItem(next, 'Wednesday', 'healthSystem', 'go gym right before GSPA', 'D');
-        markLaneItemDone(next, 'Wednesday', 'must', 'GSPA — read');
-        markLaneItemDone(next, 'Wednesday', 'must', 'GSPA — bond, chill in pool and relax');
-        markLaneItemDone(next, 'Wednesday', 'must', 'go booth and do some proper outreach, get leads to be on track');
-        markLaneItemDone(next, 'Wednesday', 'calendar', 'go gym right before GSPA');
-        markLaneItemDone(next, 'Wednesday', 'healthSystem', 'go gym right before GSPA');
-        deleteLaneItem(next, 'Wednesday', 'must', 'watch Xinru — may need leave early for class');
-        ensureCalendarItem(next, 'Friday', '10am–1pm — Admiralty booth (Morning)', 'B');
-        ensureCalendarItem(next, 'Friday', '1pm — leave for Clementi aftn shift IC', 'A');
-        ensureCalendarItem(next, 'Saturday', '8am — leave house for Admiralty', 'A');
-        ensureCalendarItem(next, 'Saturday', '10am–1pm — Admiralty booth (Morning)', 'B');
-        ensureCalendarItem(next, 'Saturday', 'aftn — settle the WhatsApp thing', 'C');
-        ensureLaneItem(next, 'Saturday', 'must', 'settle the WhatsApp thing', 'C');
-        ensureLaneItem(next, 'Saturday', 'must', 'MUST ENROL THE RASHIDDD', 'B');
-      }
-      return next;
-    }
-
-    function ensureCalendarItem(next, day, text, code='C') {
-      ensureLaneItem(next, day, 'calendar', text, code);
-    }
-
-    function ensureLaneItem(next, day, lane, text, code='C') {
-      const list = next.days?.[day]?.[lane];
-      if (!Array.isArray(list)) return;
-      if (!list.some(item => item.text === text)) list.push(task(text, code));
-    }
-
-    function markLaneItemDone(next, day, lane, text) {
-      const list = next.days?.[day]?.[lane];
-      if (!Array.isArray(list)) return;
-      list.filter(item => item.text === text).forEach(item => item.done = true);
-    }
-
-    function deleteLaneItem(next, day, lane, text) {
-      const list = next.days?.[day]?.[lane];
-      if (!Array.isArray(list)) return;
-      next.days[day][lane] = list.filter(item => item.text !== text);
-    }
-
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      showToast('Saved');
-    }
-
-    function showToast(text) {
-      const toast = document.getElementById('toast');
-      toast.textContent = text;
-      toast.classList.add('show');
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => toast.classList.remove('show'), 1200);
-    }
-
-    function totalDayTasks(day) {
-      const d = state.days[day];
-      return lanes.reduce((n, lane) => n + ((d[lane] || []).filter(t => !t.done).length), 0);
-    }
-
-    function renderTabs() {
-      const wrap = document.getElementById('dayTabs');
-      wrap.innerHTML = days.map(day => `
-        <button class="day-tab ${state.activeDay === day ? 'active' : ''}" data-day="${day}">
-          <strong>${day.slice(0,3)}</strong><span class="count">${totalDayTasks(day)}</span>
-        </button>
-      `).join('');
-      wrap.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
-        state.activeDay = btn.dataset.day;
-        saveState();
-        render();
-      }));
-    }
-
-    function renderTasks() {
-      const day = state.days[state.activeDay];
-      if (!('theme' in day)) day.theme = '';
-      const themeInput = document.getElementById('dayThemeInput');
-      themeInput.value = day.theme || '';
-      themeInput.oninput = e => { day.theme = e.target.value; localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); };
-      day.systemNotes ||= defaultSystemNotes();
-      document.querySelectorAll('[data-system-note]').forEach(el => {
-        el.value = day.systemNotes[el.dataset.systemNote] || '';
-        el.oninput = e => {
-          day.systemNotes[e.target.dataset.systemNote] = e.target.value;
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        };
-        el.onblur = () => showToast('Saved');
-      });
-      document.getElementById('activeDayTitle').textContent = state.activeDay;
-      document.getElementById('activeDaySub').textContent = `${state.week} · ${totalDayTasks(state.activeDay)} open item${totalDayTasks(state.activeDay) === 1 ? '' : 's'}`;
-      lanes.forEach(lane => {
-        const list = document.getElementById(`${lane}List`);
-        const items = day[lane];
-        document.getElementById(`${lane}Count`).textContent = items.filter(t => !t.done).length;
-        list.innerHTML = items.map(t => `
-          <article class="task ${t.done ? 'done' : ''}" data-id="${t.id}" data-lane="${lane}">
-            <input type="checkbox" ${t.done ? 'checked' : ''} aria-label="Mark done" />
-            <div>
-              <textarea class="task-text" rows="2">${escapeHtml(t.text)}</textarea>
-              <div class="task-meta"><span class="chip ${t.code.toLowerCase()}">${abc[t.code]?.label || t.code}</span></div>
-            </div>
-            <button class="delete" title="Delete">×</button>
-          </article>
-        `).join('') || `<p style="color:var(--muted); margin:10px 6px; line-height:1.45;">Empty for now.</p>`;
-      });
-
-      document.querySelectorAll('.task input[type="checkbox"]').forEach(box => box.addEventListener('change', e => {
-        const card = e.target.closest('.task');
-        const item = findTask(card.dataset.lane, card.dataset.id);
-        item.done = e.target.checked;
-        saveState(); render();
-      }));
-      document.querySelectorAll('.task-text').forEach(area => {
-        area.addEventListener('input', e => {
-          const card = e.target.closest('.task');
-          const item = findTask(card.dataset.lane, card.dataset.id);
-          item.text = e.target.value;
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        });
-        area.addEventListener('blur', () => showToast('Saved'));
-      });
-      document.querySelectorAll('.delete').forEach(btn => btn.addEventListener('click', e => {
-        const card = e.target.closest('.task');
-        const arr = state.days[state.activeDay][card.dataset.lane];
-        const idx = arr.findIndex(t => t.id === card.dataset.id);
-        if (idx >= 0) arr.splice(idx,1);
-        saveState(); render();
-      }));
-    }
-
-    function findTask(lane, id) {
-      return state.days[state.activeDay][lane].find(t => t.id === id);
-    }
-
-    function renderTeam() {
-      document.getElementById('teamGrid').innerHTML = state.team.map(p => `
-        <article class="team-card">
-          <h3><span class="person-dot ${p.cls}"></span>${p.name}</h3>
-          <div class="team-section">
-            <label>Current status:</label>
-            <textarea class="current-status" rows="3" data-team="${p.name}" data-field="currentStatus">${escapeHtml(p.currentStatus || '')}</textarea>
-            <div class="status-hint">Max 3 lines — keep only the most important status.</div>
-          </div>
-          <div class="team-section">
-            <label>What happened today:</label>
-            <textarea data-team="${p.name}" data-field="whatHappenedToday">${escapeHtml(p.whatHappenedToday || '')}</textarea>
-          </div>
-        </article>
-      `).join('');
-      document.querySelectorAll('[data-team][data-field]').forEach(el => {
-        el.addEventListener('input', e => {
-          const member = state.team.find(p => p.name === e.target.dataset.team);
-          if (e.target.dataset.field === 'currentStatus') e.target.value = limitLines(e.target.value, 3);
-          member[e.target.dataset.field] = e.target.value;
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        });
-        el.addEventListener('blur', () => showToast('Saved'));
-      });
-    }
-
-    function renderMetrics() {
-      const totals = {A:0,B:0,C:0,D:0,E:0};
-      days.forEach(day => lanes.forEach(lane => (state.days[day][lane] || []).forEach(t => { if (!t.done) totals[t.code] = (totals[t.code] || 0) + 1; }))); 
-      document.getElementById('metricsGrid').innerHTML = Object.keys(abc).map(code => `
-        <article class="metric-card">
-          <h3><span class="chip ${code.toLowerCase()}">${abc[code].label}</span></h3>
-          <p><strong style="font-size:30px;color:var(--ink);letter-spacing:-.04em;">${totals[code]}</strong> open items</p>
-          <p>${abc[code].detail}</p>
-        </article>
-      `).join('');
-    }
-
-    function renderNotes() {
-      document.getElementById('weeklyLearning').value = state.notes.weeklyLearning || '';
-      document.getElementById('teamFaq').value = state.notes.teamFaq || '';
-      document.getElementById('weekLabel').textContent = `Weekly Planning · ${state.week}`;
-      const today = todayDayName();
-      document.getElementById('todayTitle').textContent = today;
-      const n = state.days[today] ? totalDayTasks(today) : totalDayTasks(state.activeDay);
-      document.getElementById('todaySummary').textContent = `${n} open item${n === 1 ? '' : 's'} · keep it simple`;
-    }
-
-    function renderNotionMirror() {
-      const data = nightlyNotionSync || {};
-      document.getElementById('notionMirrorTitle').textContent = data.title || 'Weekly Dashboard';
-      document.getElementById('notionWeekDates').textContent = data.start && data.end ? `${data.start} → ${data.end}` : 'Current week';
-      document.getElementById('notionMotto').textContent = data.motto || 'Your goals and daily checklists, mirrored from Notion.';
-      const synced = data.syncedAt ? new Date(data.syncedAt).toLocaleString('en-SG', {timeZone:'Asia/Singapore', day:'numeric', month:'short', hour:'numeric', minute:'2-digit'}) : 'pending';
-      document.getElementById('notionSyncStatus').textContent = `Notion sync · ${synced}`;
-      const goals = Array.isArray(data.goals) ? data.goals : [];
-      document.getElementById('notionGoals').innerHTML = goals.length
-        ? goals.map((goal, i) => `<li class="notion-goal"><span>0${i + 1}</span><div>${escapeHtml(goal)}</div></li>`).join('')
-        : '<li class="notion-goal"><span>—</span><div>No weekly goals added yet.</div></li>';
-      const today = todayDayName();
-      document.getElementById('notionWeekGrid').innerHTML = days.map(day => {
-        const items = Array.isArray(data.days?.[day]) ? data.days[day] : [];
-        const body = items.length
-          ? `<ul>${items.map(item => `<li class="notion-task ${item.done ? 'done' : ''}"><span class="box">${item.done ? '✓' : ''}</span><span>${escapeHtml(item.text || '')}</span></li>`).join('')}</ul>`
-          : '<div class="notion-empty">No tasks</div>';
-        return `<article class="notion-day ${day === today ? 'is-today' : ''}"><h3>${day}</h3>${body}</article>`;
+    function renderRich(parts=[]) {
+      return parts.map(part => {
+        const a = part.annotations || {};
+        const classes = ['rich', ...['bold','italic','strikethrough','underline','code'].filter(k => a[k])].join(' ');
+        const text = escapeHtml(part.text || '');
+        return part.href ? `<a class="${classes} rich-link" href="${escapeHtml(part.href)}" target="_blank" rel="noopener">${text}</a>` : `<span class="${classes}">${text}</span>`;
       }).join('');
-      document.getElementById('notionSource').innerHTML = data.url
-        ? `Source: <a href="${escapeHtml(data.url)}" target="_blank" rel="noopener">Open this week in Notion ↗</a>`
-        : 'Notion source unavailable.';
     }
 
-    function render() { renderTabs(); renderTasks(); renderTeam(); renderMetrics(); renderNotes(); renderNotionMirror(); }
+    function renderChildren(children=[]) { return children.map(renderBlock).join(''); }
 
-    function escapeHtml(str='') {
-      return str.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    function renderBlock(block) {
+      const type = block.type || 'unsupported';
+      const rich = renderRich(block.rich || []);
+      const children = renderChildren(block.children || []);
+      if (type === 'paragraph') return `<div class="block paragraph ${rich ? '' : 'empty'}">${rich}${children}</div>`;
+      if (type === 'quote') return `<blockquote class="block quote">${rich}${children}</blockquote>`;
+      if (type === 'heading_1') return `<h1 class="block">${rich}</h1>${children}`;
+      if (type === 'heading_2') return `<h2 class="block">${rich}</h2>${children}`;
+      if (type === 'heading_3') return `<h3 class="block">${rich}</h3>${children}`;
+      if (type === 'divider') return '<div class="block divider"></div>';
+      if (type === 'column_list') return `<div class="block columns">${children}</div>`;
+      if (type === 'column') return `<section class="column">${children}</section>`;
+      if (type === 'callout') return `<aside class="block callout ${escapeHtml(block.color || 'default_background')}"><div class="callout-icon">${escapeHtml(block.icon || '💡')}</div><div><div class="callout-title">${rich}</div><div class="callout-children">${children}</div></div></aside>`;
+      if (type === 'to_do') return `<div class="block todo ${block.checked ? 'done' : ''}"><span class="todo-box"></span><div class="todo-text">${rich || '&nbsp;'}${children}</div></div>`;
+      if (type === 'bulleted_list_item') return `<div class="block list-item"><span class="bullet">•</span><div>${rich}${children}</div></div>`;
+      if (type === 'numbered_list_item') return `<div class="block list-item"><span>${escapeHtml(block.number || '1.')}</span><div>${rich}${children}</div></div>`;
+      if (type === 'toggle') return `<details class="block toggle"><summary>${rich || 'Toggle'}</summary><div class="toggle-children">${children}</div></details>`;
+      if (type === 'child_page' || type === 'child_database') return `<a class="block page-link" href="${escapeHtml(block.url || notionPage.url)}" target="_blank" rel="noopener"><span>${type === 'child_database' ? '🗄️' : '📄'}</span><span>${escapeHtml(block.title || 'Untitled')}</span></a>${children}`;
+      if (type === 'image' && block.src) return `<figure class="block notion-image"><img src="${escapeHtml(block.src)}" alt="${escapeHtml(block.caption || '')}" loading="lazy" />${block.caption ? `<figcaption>${escapeHtml(block.caption)}</figcaption>` : ''}</figure>`;
+      if (type === 'embed' && block.url) return `<div class="block embed-wrap"><iframe src="${escapeHtml(block.url)}" loading="lazy" title="Embedded Notion content"></iframe></div>`;
+      return `<div class="unsupported">${children}</div>`;
     }
 
-    function limitLines(value, maxLines) {
-      return value.split('\n').slice(0, maxLines).join('\n');
+    document.title = notionPage.title || 'Weekly Dashboard';
+    document.getElementById('pageTitle').textContent = notionPage.title || 'Weekly Dashboard';
+    document.getElementById('crumb').textContent = notionPage.title || 'Weekly Dashboard';
+    document.getElementById('notionLink').href = notionPage.url || '#';
+    if (notionPage.cover) {
+      document.getElementById('cover').hidden = false;
+      document.getElementById('coverImage').src = notionPage.cover;
     }
-
-    document.querySelectorAll('.add-form').forEach(form => form.addEventListener('submit', e => {
-      e.preventDefault();
-      const lane = form.dataset.add;
-      const text = form.querySelector('textarea').value.trim();
-      const code = form.querySelector('select').value;
-      if (!text) return;
-      state.days[state.activeDay][lane].push(task(text, code));
-      form.reset();
-      saveState(); render();
-    }));
-
-    document.getElementById('weeklyLearning').addEventListener('input', e => { state.notes.weeklyLearning = e.target.value; localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); });
-    document.getElementById('teamFaq').addEventListener('input', e => { state.notes.teamFaq = e.target.value; localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); });
-
-    const dialog = document.getElementById('dataDialog');
-    const jsonBox = document.getElementById('jsonBox');
-    document.getElementById('exportBtn').addEventListener('click', () => {
-      document.getElementById('dialogTitle').textContent = 'Export plan';
-      document.getElementById('dialogHint').textContent = 'Copy this JSON to move your plan between phone/laptop until Notion sync is connected.';
-      document.getElementById('applyImport').hidden = true;
-      jsonBox.value = JSON.stringify(state, null, 2);
-      dialog.showModal();
-      jsonBox.select();
-    });
-    document.getElementById('importBtn').addEventListener('click', () => {
-      document.getElementById('dialogTitle').textContent = 'Import plan';
-      document.getElementById('dialogHint').textContent = 'Paste exported JSON here.';
-      document.getElementById('applyImport').hidden = false;
-      jsonBox.value = '';
-      dialog.showModal();
-    });
-    document.getElementById('applyImport').addEventListener('click', () => {
-      try {
-        const next = JSON.parse(jsonBox.value);
-        if (!next.days || !next.team) throw new Error('Missing planner fields');
-        state = next;
-        saveState(); render(); dialog.close();
-      } catch (err) { alert('Cannot import: ' + err.message); }
-    });
-    document.getElementById('closeDialog').addEventListener('click', () => dialog.close());
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      if (!confirm('Reset this local demo data?')) return;
-      state = structuredClone(seed);
-      saveState(); render();
-    });
-    document.getElementById('quickAddBtn').addEventListener('click', () => document.querySelector('[data-add="must"] textarea').focus());
-
-    render();
+    const date = notionPage.date || {};
+    document.getElementById('pageMeta').textContent = date.start ? `${date.start}${date.end && date.end !== date.start ? ` → ${date.end}` : ''}` : '';
+    document.getElementById('blocks').innerHTML = renderChildren(notionPage.blocks || []);
+    document.getElementById('synced').textContent = notionPage.syncedAt ? `Mirrored from Notion · ${new Date(notionPage.syncedAt).toLocaleString('en-SG', {timeZone:'Asia/Singapore', day:'numeric', month:'short', hour:'numeric', minute:'2-digit'})}` : '';
   </script>
 </body>
 </html>
